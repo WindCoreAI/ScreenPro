@@ -1,0 +1,62 @@
+# Swift/.gitignore
+
+# Xcode
+.build/
+DerivedData/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/xcshareddata/xcschemes/*.xcscheme
+!*.xcodeproj/xcshareddata/xcschemes/*-Shared.xcscheme
+
+# Swift Package Manager
+.swiftpm/
+Packages/
+Package.resolved
+
+# Build products
+build/
+*.o
+*.a
+*.dylib
+*.framework
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Environment
+.env
+.env.local
+*.env
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Archives
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# Code Injection
+iOSInjectionProject/

@@ -51,3 +51,10 @@ xcodebuild -scheme ScreenPro -configuration Release archive
 - GIF encoding uses ImageIO with CGImageDestination
 - System audio capture uses ScreenCaptureKit's audio features (no drivers needed)
 - Global shortcuts require accessibility permissions for some features
+
+## Active Technologies
+- Swift 5.9+ with strict concurrency checking enabled + SwiftUI (UI), AppKit (NSStatusItem, NSWindow), ScreenCaptureKit (permission detection), AVFoundation (microphone permission), Carbon (global hotkeys) (001-project-setup)
+- UserDefaults for settings persistence (SwiftData deferred to later milestone for capture history) (001-project-setup)
+
+## Recent Changes
+- 001-project-setup: Added Swift 5.9+ with strict concurrency checking enabled + SwiftUI (UI), AppKit (NSStatusItem, NSWindow), ScreenCaptureKit (permission detection), AVFoundation (microphone permission), Carbon (global hotkeys)
