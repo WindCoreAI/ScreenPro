@@ -55,6 +55,8 @@ xcodebuild -scheme ScreenPro -configuration Release archive
 ## Active Technologies
 - Swift 5.9+ with strict concurrency checking enabled + SwiftUI (UI), AppKit (NSStatusItem, NSWindow), ScreenCaptureKit (permission detection), AVFoundation (microphone permission), Carbon (global hotkeys) (001-project-setup)
 - UserDefaults for settings persistence (SwiftData deferred to later milestone for capture history) (001-project-setup)
+- Swift 5.9+ with strict concurrency checking enabled + ScreenCaptureKit, AppKit, SwiftUI, Core Graphics, Core Image (002-basic-capture)
+- FileManager (user-configured save location), NSPasteboard (clipboard) (002-basic-capture)
 
 ## Recent Changes
 - 001-project-setup: Added Swift 5.9+ with strict concurrency checking enabled + SwiftUI (UI), AppKit (NSStatusItem, NSWindow), ScreenCaptureKit (permission detection), AVFoundation (microphone permission), Carbon (global hotkeys)
