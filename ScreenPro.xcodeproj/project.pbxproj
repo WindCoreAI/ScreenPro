@@ -26,12 +26,29 @@
 		001000000012 /* RecordingSettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000012; };
 		001000000013 /* ShortcutsSettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000013; };
 
+		/* Capture Feature files */
+		001000000021 /* CaptureTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000021; };
+		001000000022 /* CaptureResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000022; };
+		001000000023 /* CaptureError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000023; };
+		001000000024 /* MultiMonitorSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000024; };
+		001000000025 /* CaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000025; };
+		001000000026 /* SelectionWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000026; };
+		001000000027 /* SelectionOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000027; };
+		001000000028 /* CrosshairView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000028; };
+		001000000029 /* DimensionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000029; };
+		001000000030 /* InstructionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000030; };
+		001000000033 /* WindowHighlightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000033; };
+		001000000034 /* WindowPickerOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000034; };
+		001000000035 /* WindowPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000035; };
+
 		/* Resources */
 		001000000014 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 002000000014; };
 
 		/* Tests */
 		001000000015 /* SettingsManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000015; };
 		001000000016 /* PermissionManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000016; };
+		001000000031 /* CaptureServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000031; };
+		001000000032 /* CaptureIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000032; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -65,6 +82,21 @@
 		002000000018 /* ScreenPro.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ScreenPro.entitlements; sourceTree = "<group>"; };
 		002000000019 /* ScreenPro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScreenPro.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		002000000020 /* ScreenProTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScreenProTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		002000000021 /* CaptureTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureTypes.swift; sourceTree = "<group>"; };
+		002000000022 /* CaptureResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureResult.swift; sourceTree = "<group>"; };
+		002000000023 /* CaptureError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureError.swift; sourceTree = "<group>"; };
+		002000000024 /* MultiMonitorSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiMonitorSupport.swift; sourceTree = "<group>"; };
+		002000000025 /* CaptureService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureService.swift; sourceTree = "<group>"; };
+		002000000026 /* SelectionWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionWindow.swift; sourceTree = "<group>"; };
+		002000000027 /* SelectionOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionOverlayView.swift; sourceTree = "<group>"; };
+		002000000028 /* CrosshairView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrosshairView.swift; sourceTree = "<group>"; };
+		002000000029 /* DimensionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DimensionsView.swift; sourceTree = "<group>"; };
+		002000000030 /* InstructionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionsView.swift; sourceTree = "<group>"; };
+		002000000031 /* CaptureServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureServiceTests.swift; sourceTree = "<group>"; };
+		002000000032 /* CaptureIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureIntegrationTests.swift; sourceTree = "<group>"; };
+		002000000033 /* WindowHighlightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowHighlightView.swift; sourceTree = "<group>"; };
+		002000000034 /* WindowPickerOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPickerOverlay.swift; sourceTree = "<group>"; };
+		002000000035 /* WindowPickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPickerController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,6 +165,7 @@
 			children = (
 				007000000007 /* MenuBar */,
 				007000000008 /* Settings */,
+				007000000012 /* Capture */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -170,6 +203,8 @@
 			children = (
 				002000000015 /* SettingsManagerTests.swift */,
 				002000000016 /* PermissionManagerTests.swift */,
+				007000000014 /* Unit */,
+				007000000015 /* Integration */,
 			);
 			path = ScreenProTests;
 			sourceTree = "<group>";
@@ -181,6 +216,58 @@
 				002000000020 /* ScreenProTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		007000000012 /* Capture */ = {
+			isa = PBXGroup;
+			children = (
+				002000000021 /* CaptureTypes.swift */,
+				002000000022 /* CaptureResult.swift */,
+				002000000023 /* CaptureError.swift */,
+				002000000024 /* MultiMonitorSupport.swift */,
+				002000000025 /* CaptureService.swift */,
+				007000000013 /* SelectionOverlay */,
+				007000000016 /* WindowPicker */,
+			);
+			path = Capture;
+			sourceTree = "<group>";
+		};
+		007000000013 /* SelectionOverlay */ = {
+			isa = PBXGroup;
+			children = (
+				002000000026 /* SelectionWindow.swift */,
+				002000000027 /* SelectionOverlayView.swift */,
+				002000000028 /* CrosshairView.swift */,
+				002000000029 /* DimensionsView.swift */,
+				002000000030 /* InstructionsView.swift */,
+			);
+			path = SelectionOverlay;
+			sourceTree = "<group>";
+		};
+		007000000014 /* Unit */ = {
+			isa = PBXGroup;
+			children = (
+				002000000031 /* CaptureServiceTests.swift */,
+			);
+			path = Unit;
+			sourceTree = "<group>";
+		};
+		007000000015 /* Integration */ = {
+			isa = PBXGroup;
+			children = (
+				002000000032 /* CaptureIntegrationTests.swift */,
+			);
+			path = Integration;
+			sourceTree = "<group>";
+		};
+		007000000016 /* WindowPicker */ = {
+			isa = PBXGroup;
+			children = (
+				002000000033 /* WindowHighlightView.swift */,
+				002000000034 /* WindowPickerOverlay.swift */,
+				002000000035 /* WindowPickerController.swift */,
+			);
+			path = WindowPicker;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -287,6 +374,19 @@
 				001000000011 /* CaptureSettingsTab.swift in Sources */,
 				001000000012 /* RecordingSettingsTab.swift in Sources */,
 				001000000013 /* ShortcutsSettingsTab.swift in Sources */,
+				001000000021 /* CaptureTypes.swift in Sources */,
+				001000000022 /* CaptureResult.swift in Sources */,
+				001000000023 /* CaptureError.swift in Sources */,
+				001000000024 /* MultiMonitorSupport.swift in Sources */,
+				001000000025 /* CaptureService.swift in Sources */,
+				001000000026 /* SelectionWindow.swift in Sources */,
+				001000000027 /* SelectionOverlayView.swift in Sources */,
+				001000000028 /* CrosshairView.swift in Sources */,
+				001000000029 /* DimensionsView.swift in Sources */,
+				001000000030 /* InstructionsView.swift in Sources */,
+				001000000033 /* WindowHighlightView.swift in Sources */,
+				001000000034 /* WindowPickerOverlay.swift in Sources */,
+				001000000035 /* WindowPickerController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -296,6 +396,8 @@
 			files = (
 				001000000015 /* SettingsManagerTests.swift in Sources */,
 				001000000016 /* PermissionManagerTests.swift in Sources */,
+				001000000031 /* CaptureServiceTests.swift in Sources */,
+				001000000032 /* CaptureIntegrationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

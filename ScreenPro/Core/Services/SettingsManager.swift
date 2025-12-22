@@ -86,6 +86,8 @@ struct Settings: Codable, Equatable {
     var launchAtLogin: Bool = false
     var showMenuBarIcon: Bool = true
     var playCaptureSound: Bool = true
+    var showNotifications: Bool = true
+    var copyToClipboardAfterCapture: Bool = true
 
     // MARK: - Capture Settings
     var defaultSaveLocation: URL = Settings.defaultPicturesDirectory

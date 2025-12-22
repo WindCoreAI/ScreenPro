@@ -1,6 +1,8 @@
 import Foundation
 import SwiftUI
 import Combine
+import ScreenCaptureKit
+import UserNotifications
 
 // MARK: - AppCoordinator State (T010)
 
@@ -69,10 +71,18 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
     let shortcutManager: ShortcutManager
     let settingsManager: SettingsManager
     let storageService: StorageService
+    private(set) lazy var captureService: CaptureService = {
+        CaptureService(
+            storageService: storageService,
+            settingsManager: settingsManager
+        )
+    }()
 
     // MARK: - Private Properties
 
     private var cancellables = Set<AnyCancellable>()
+    private var selectionWindows: [SelectionWindow] = []
+    private var windowPickerController: WindowPickerController?
 
     // MARK: - Initialization
 
@@ -117,44 +127,30 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
     func cleanup() {
         shortcutManager.unregisterAll()
         settingsManager.save()
+        dismissSelectionWindows()
     }
 
-    // MARK: - Actions (T024, T025)
+    // MARK: - Actions (T024, T025, T026, T027)
 
-    /// Initiates area capture mode
+    /// Initiates area capture mode (T026)
     func captureArea() {
         guard canPerformCapture() else { return }
         state = .selectingArea
-        // Actual capture will be implemented in Milestone 2
-        print("Area capture initiated (placeholder)")
-        // Reset to idle for now
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            self?.state = .idle
-        }
+        beginAreaSelection()
     }
 
     /// Initiates window capture mode
     func captureWindow() {
         guard canPerformCapture() else { return }
         state = .selectingWindow
-        // Actual capture will be implemented in Milestone 2
-        print("Window capture initiated (placeholder)")
-        // Reset to idle for now
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            self?.state = .idle
-        }
+        beginWindowSelection()
     }
 
-    /// Captures the entire screen
+    /// Captures the entire screen (T042)
     func captureFullscreen() {
         guard canPerformCapture() else { return }
         state = .capturing
-        // Actual capture will be implemented in Milestone 2
-        print("Fullscreen capture initiated (placeholder)")
-        // Reset to idle for now
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            self?.state = .idle
-        }
+        performFullscreenCapture()
     }
 
     /// Starts screen recording
@@ -181,6 +177,181 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
         // Cmd+, automatically opens the Settings scene via macOS standard behavior
         // This method is called when user selects Settings from menu
         NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+    }
+
+    // MARK: - Area Selection (T026)
+
+    /// Begins area selection by creating overlay windows on all screens.
+    private func beginAreaSelection() {
+        Task {
+            // Refresh available content before capture
+            do {
+                try await captureService.refreshAvailableContent()
+            } catch {
+                handleCaptureError(error)
+                return
+            }
+
+            // Create selection window for each screen
+            for screen in NSScreen.screens {
+                let window = SelectionWindow(screen: screen)
+                window.selectionDelegate = self
+                window.showForSelection()
+                selectionWindows.append(window)
+            }
+        }
+    }
+
+    /// Dismisses all selection windows and resets state.
+    private func dismissSelectionWindows() {
+        for window in selectionWindows {
+            window.dismiss()
+        }
+        selectionWindows.removeAll()
+    }
+
+    // MARK: - Window Selection (T038)
+
+    /// Begins window selection mode.
+    private func beginWindowSelection() {
+        Task {
+            do {
+                // Refresh available content to get current windows
+                try await captureService.refreshAvailableContent()
+            } catch {
+                handleCaptureError(error)
+                return
+            }
+
+            let windows = captureService.availableWindows
+
+            guard !windows.isEmpty else {
+                handleCaptureError(CaptureError.windowNotFound)
+                return
+            }
+
+            // Create and use the window picker
+            let picker = WindowPickerController()
+            windowPickerController = picker
+
+            // Wait for user selection
+            let selectedWindow = await picker.pickWindow(from: windows)
+            windowPickerController = nil
+
+            if let window = selectedWindow {
+                // User selected a window - capture it
+                state = .capturing
+                do {
+                    let result = try await captureService.captureWindow(window)
+                    handleCaptureResult(result)
+                } catch {
+                    handleCaptureError(error)
+                }
+            } else {
+                // User cancelled
+                state = .idle
+            }
+        }
+    }
+
+    // MARK: - Fullscreen Capture (T042)
+
+    /// Performs fullscreen capture of the current display.
+    private func performFullscreenCapture() {
+        Task {
+            do {
+                try await captureService.refreshAvailableContent()
+                let result = try await captureService.captureDisplay(nil)
+                handleCaptureResult(result)
+            } catch {
+                handleCaptureError(error)
+            }
+        }
+    }
+
+    // MARK: - Capture Result Handling (T027, T054, T055, T056)
+
+    /// Handles a successful capture result.
+    private func handleCaptureResult(_ result: CaptureResult) {
+        // Save to file
+        do {
+            let url = try captureService.save(result)
+            print("Screenshot saved to: \(url.path)")
+        } catch {
+            print("Failed to save screenshot: \(error)")
+        }
+
+        // Copy to clipboard if enabled
+        if settingsManager.settings.copyToClipboardAfterCapture {
+            captureService.copyToClipboard(result)
+        }
+
+        // Play capture sound if enabled
+        captureService.playCaptureSound()
+
+        // Show notification
+        showNotification(for: result)
+
+        // Reset state
+        state = .idle
+    }
+
+    /// Handles a capture error (T054).
+    private func handleCaptureError(_ error: Error) {
+        print("Capture error: \(error)")
+
+        // Show user notification for the error
+        if let captureError = error as? CaptureError {
+            switch captureError {
+            case .cancelled:
+                // Don't show notification for user cancellation
+                break
+            case .permissionDenied:
+                permissionManager.openScreenRecordingPreferences()
+            default:
+                showErrorNotification(captureError.localizedDescription)
+            }
+        } else {
+            showErrorNotification(error.localizedDescription)
+        }
+
+        state = .idle
+    }
+
+    /// Shows a success notification for a capture (T056).
+    private func showNotification(for result: CaptureResult) {
+        guard settingsManager.settings.showNotifications else { return }
+
+        let content = UNMutableNotificationContent()
+        content.title = "Screenshot Captured"
+        content.body = "Screenshot saved successfully"
+        content.sound = nil // We already played the capture sound
+
+        let request = UNNotificationRequest(
+            identifier: result.id.uuidString,
+            content: content,
+            trigger: nil
+        )
+
+        UNUserNotificationCenter.current().add(request)
+    }
+
+    /// Shows an error notification.
+    private func showErrorNotification(_ message: String) {
+        guard settingsManager.settings.showNotifications else { return }
+
+        let content = UNMutableNotificationContent()
+        content.title = "Screenshot Failed"
+        content.body = message
+        content.sound = .default
+
+        let request = UNNotificationRequest(
+            identifier: UUID().uuidString,
+            content: content,
+            trigger: nil
+        )
+
+        UNUserNotificationCenter.current().add(request)
     }
 
     // MARK: - Private Methods
@@ -244,5 +415,35 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
                 self?.settingsManager.save()
             }
             .store(in: &cancellables)
+    }
+}
+
+// MARK: - SelectionWindowDelegate
+
+extension AppCoordinator: SelectionWindowDelegate {
+    func selectionWindow(_ window: SelectionWindow, didSelectRect rect: CGRect) {
+        // Dismiss all selection windows
+        dismissSelectionWindows()
+
+        // Transition to capturing state
+        state = .capturing
+
+        // Perform the capture
+        Task {
+            do {
+                let result = try await captureService.captureArea(rect)
+                handleCaptureResult(result)
+            } catch {
+                handleCaptureError(error)
+            }
+        }
+    }
+
+    func selectionWindowDidCancel(_ window: SelectionWindow) {
+        // Dismiss all selection windows
+        dismissSelectionWindows()
+
+        // Reset state
+        state = .idle
     }
 }
