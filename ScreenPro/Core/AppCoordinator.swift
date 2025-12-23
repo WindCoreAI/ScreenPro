@@ -77,6 +77,13 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
             settingsManager: settingsManager
         )
     }()
+    private(set) lazy var quickAccessController: QuickAccessWindowController = {
+        QuickAccessWindowController(
+            settingsManager: settingsManager,
+            captureService: captureService,
+            coordinator: self
+        )
+    }()
 
     // MARK: - Private Properties
 
@@ -273,26 +280,53 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
 
     /// Handles a successful capture result.
     private func handleCaptureResult(_ result: CaptureResult) {
-        // Save to file
+        // Check if Quick Access is enabled
+        if settingsManager.settings.showQuickAccess {
+            // Route to Quick Access overlay
+            quickAccessController.addCapture(result)
+
+            // Play capture sound if enabled
+            captureService.playCaptureSound()
+
+            // Reset state
+            state = .idle
+        } else {
+            // Original behavior: direct save
+            // Save to file
+            do {
+                let url = try captureService.save(result)
+                print("Screenshot saved to: \(url.path)")
+            } catch {
+                print("Failed to save screenshot: \(error)")
+            }
+
+            // Copy to clipboard if enabled
+            if settingsManager.settings.copyToClipboardAfterCapture {
+                captureService.copyToClipboard(result)
+            }
+
+            // Play capture sound if enabled
+            captureService.playCaptureSound()
+
+            // Show notification
+            showNotification(for: result)
+
+            // Reset state
+            state = .idle
+        }
+    }
+
+    /// Opens the annotation editor for a capture.
+    /// - Parameter result: The capture to annotate.
+    /// - Note: Placeholder for Milestone 4. Currently saves file and opens in Preview.
+    func openAnnotationEditor(for result: CaptureResult) {
+        state = .annotating(result.id)
         do {
             let url = try captureService.save(result)
-            print("Screenshot saved to: \(url.path)")
+            NSWorkspace.shared.open(url)
         } catch {
-            print("Failed to save screenshot: \(error)")
+            print("Failed to save for annotation: \(error)")
         }
-
-        // Copy to clipboard if enabled
-        if settingsManager.settings.copyToClipboardAfterCapture {
-            captureService.copyToClipboard(result)
-        }
-
-        // Play capture sound if enabled
-        captureService.playCaptureSound()
-
-        // Show notification
-        showNotification(for: result)
-
-        // Reset state
         state = .idle
     }
 

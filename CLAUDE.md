@@ -57,8 +57,12 @@ xcodebuild -scheme ScreenPro -configuration Release archive
 - UserDefaults for settings persistence (SwiftData deferred to later milestone for capture history) (001-project-setup)
 - Swift 5.9+ with strict concurrency checking enabled + ScreenCaptureKit, AppKit, SwiftUI, Core Graphics, Core Image (002-basic-capture)
 - FileManager (user-configured save location), NSPasteboard (clipboard) (002-basic-capture)
+- Swift 5.9+ with strict concurrency checking enabled + SwiftUI (views), AppKit (NSWindow, NSPasteboard, NSDraggingSource), Core Graphics (thumbnail generation) (003-quick-access-overlay)
+- In-memory queue (no persistence - captures discarded on dismiss) (003-quick-access-overlay)
 - Swift 5.9+ with strict concurrency checking enabled + SwiftUI, AppKit (NSWindow, NSImage), Core Graphics, Core Image, Core Tex (004-annotation-editor)
 - In-memory during editing, export to FileManager via StorageService, clipboard via NSPasteboard (004-annotation-editor)
 
 ## Recent Changes
+- 003-quick-access-overlay: Implemented Quick Access overlay feature with floating thumbnail preview, copy/save/annotate/dismiss actions, drag-and-drop to external apps, keyboard navigation, position configuration, and auto-dismiss
+- 002-basic-capture: Added area/window/fullscreen capture with ScreenCaptureKit integration
 - 001-project-setup: Added Swift 5.9+ with strict concurrency checking enabled + SwiftUI (UI), AppKit (NSStatusItem, NSWindow), ScreenCaptureKit (permission detection), AVFoundation (microphone permission), Carbon (global hotkeys)
