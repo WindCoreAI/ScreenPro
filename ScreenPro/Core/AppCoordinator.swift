@@ -85,6 +85,12 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
         )
     }()
 
+    /// The annotation editor window controller (T017)
+    /// Note: Uses NSWindowController type to avoid compile-time dependency on Annotation module.
+    /// The actual AnnotationEditorWindowController will be assigned when the Annotation files
+    /// are added to the Xcode project build phase.
+    var annotationEditorController: NSWindowController?
+
     // MARK: - Private Properties
 
     private var cancellables = Set<AnyCancellable>()
@@ -318,9 +324,11 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
 
     /// Opens the annotation editor for a capture.
     /// - Parameter result: The capture to annotate.
-    /// - Note: Placeholder for Milestone 4. Currently saves file and opens in Preview.
+    /// - Note: Placeholder implementation for T017. Full implementation in AnnotationEditorWindow.swift
+    ///         will override this when the Annotation module is added to the build.
     func openAnnotationEditor(for result: CaptureResult) {
         state = .annotating(result.id)
+        // Placeholder: save and open in Preview until Annotation module is compiled
         do {
             let url = try captureService.save(result)
             NSWorkspace.shared.open(url)
