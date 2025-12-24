@@ -33,11 +33,40 @@ struct MenuBarView: View {
             .accessibilityHint("Capture the entire screen")
 
             Button("Capture Scrolling...") {
-                // Will be implemented in later milestone
+                coordinator.startScrollingCapture()
             }
-            .disabled(true)
+            .disabled(!isReady)
             .accessibilityLabel("Capture Scrolling")
-            .accessibilityHint("Capture a scrolling window, not yet available")
+            .accessibilityHint("Capture a scrolling window or webpage")
+
+            Divider()
+
+            // Self-Timer Submenu (T045)
+            Menu("Self-Timer") {
+                Button("3 Seconds") {
+                    coordinator.startTimedCapture(seconds: 3)
+                }
+                .disabled(!isReady)
+                .accessibilityLabel("3 Second Timer")
+                .accessibilityHint("Capture fullscreen after 3 second countdown")
+
+                Button("5 Seconds") {
+                    coordinator.startTimedCapture(seconds: 5)
+                }
+                .disabled(!isReady)
+                .accessibilityLabel("5 Second Timer")
+                .accessibilityHint("Capture fullscreen after 5 second countdown")
+
+                Button("10 Seconds") {
+                    coordinator.startTimedCapture(seconds: 10)
+                }
+                .disabled(!isReady)
+                .accessibilityLabel("10 Second Timer")
+                .accessibilityHint("Capture fullscreen after 10 second countdown")
+            }
+            .disabled(!isReady)
+            .accessibilityLabel("Self-Timer")
+            .accessibilityHint("Set a countdown timer before capturing")
         }
 
         Divider()
@@ -113,11 +142,19 @@ struct MenuBarView: View {
         // Tools Section
         Section("Tools") {
             Button("Text Recognition (OCR)") {
-                // Will be implemented in later milestone
+                coordinator.startOCRCapture()
             }
-            .disabled(true)
+            .disabled(!isReady)
             .accessibilityLabel("Text Recognition")
-            .accessibilityHint("Capture and extract text from screen, not yet available")
+            .accessibilityHint("Capture and extract text from screen")
+
+            // Screen Freeze (T050)
+            Button(isFrozen ? "Unfreeze Screen" : "Freeze Screen") {
+                coordinator.toggleScreenFreeze()
+            }
+            .disabled(!isReady)
+            .accessibilityLabel(isFrozen ? "Unfreeze Screen" : "Freeze Screen")
+            .accessibilityHint(isFrozen ? "Unfreeze the display" : "Freeze the display to capture dynamic content")
 
             Button("All-in-One") {
                 // Will be implemented in later milestone
@@ -157,6 +194,10 @@ struct MenuBarView: View {
 
     private var isRecording: Bool {
         coordinator.state == .recording
+    }
+
+    private var isFrozen: Bool {
+        coordinator.screenFreezeController.isFrozen
     }
 }
 
