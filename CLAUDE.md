@@ -61,6 +61,8 @@ xcodebuild -scheme ScreenPro -configuration Release archive
 - In-memory queue (no persistence - captures discarded on dismiss) (003-quick-access-overlay)
 - Swift 5.9+ with strict concurrency checking enabled + SwiftUI, AppKit (NSWindow, NSImage), Core Graphics, Core Image, Core Tex (004-annotation-editor)
 - In-memory during editing, export to FileManager via StorageService, clipboard via NSPasteboard (004-annotation-editor)
+- Swift 5.9+ with strict concurrency checking enabled + ScreenCaptureKit, AVFoundation, ImageIO, AppKit, SwiftUI, Core Graphics (005-screen-recording)
+- FileManager for recordings, UserDefaults for settings (via existing SettingsManager) (005-screen-recording)
 
 ## Recent Changes
 - 003-quick-access-overlay: Implemented Quick Access overlay feature with floating thumbnail preview, copy/save/annotate/dismiss actions, drag-and-drop to external apps, keyboard navigation, position configuration, and auto-dismiss

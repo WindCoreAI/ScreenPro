@@ -7,55 +7,82 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		'001000000001' = {isa = PBXBuildFile; fileRef = 002000000001; };
-		'001000000002' = {isa = PBXBuildFile; fileRef = 002000000002; };
-		'001000000003' = {isa = PBXBuildFile; fileRef = 002000000003; };
-		'001000000004' = {isa = PBXBuildFile; fileRef = 002000000004; };
-		'001000000005' = {isa = PBXBuildFile; fileRef = 002000000005; };
-		'001000000006' = {isa = PBXBuildFile; fileRef = 002000000006; };
-		'001000000007' = {isa = PBXBuildFile; fileRef = 002000000007; };
-		'001000000008' = {isa = PBXBuildFile; fileRef = 002000000008; };
-		'001000000009' = {isa = PBXBuildFile; fileRef = 002000000009; };
-		'001000000010' = {isa = PBXBuildFile; fileRef = 002000000010; };
-		'001000000011' = {isa = PBXBuildFile; fileRef = 002000000011; };
-		'001000000012' = {isa = PBXBuildFile; fileRef = 002000000012; };
-		'001000000013' = {isa = PBXBuildFile; fileRef = 002000000013; };
-		'001000000014' = {isa = PBXBuildFile; fileRef = 002000000014; };
-		'001000000015' = {isa = PBXBuildFile; fileRef = 002000000015; };
-		'001000000016' = {isa = PBXBuildFile; fileRef = 002000000016; };
-		'001000000021' = {isa = PBXBuildFile; fileRef = 002000000021; };
-		'001000000022' = {isa = PBXBuildFile; fileRef = 002000000022; };
-		'001000000023' = {isa = PBXBuildFile; fileRef = 002000000023; };
-		'001000000024' = {isa = PBXBuildFile; fileRef = 002000000024; };
-		'001000000025' = {isa = PBXBuildFile; fileRef = 002000000025; };
-		'001000000026' = {isa = PBXBuildFile; fileRef = 002000000026; };
-		'001000000027' = {isa = PBXBuildFile; fileRef = 002000000027; };
-		'001000000028' = {isa = PBXBuildFile; fileRef = 002000000028; };
-		'001000000029' = {isa = PBXBuildFile; fileRef = 002000000029; };
-		'001000000030' = {isa = PBXBuildFile; fileRef = 002000000030; };
-		'001000000031' = {isa = PBXBuildFile; fileRef = 002000000031; };
-		'001000000032' = {isa = PBXBuildFile; fileRef = 002000000032; };
-		'001000000033' = {isa = PBXBuildFile; fileRef = 002000000033; };
-		'001000000034' = {isa = PBXBuildFile; fileRef = 002000000034; };
-		'001000000035' = {isa = PBXBuildFile; fileRef = 002000000035; };
+		001000000001 /* ScreenProApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000001 /* ScreenProApp.swift */; };
+		001000000002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000002 /* AppDelegate.swift */; };
+		001000000003 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000003 /* AppCoordinator.swift */; };
+		001000000004 /* PermissionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000004 /* PermissionManager.swift */; };
+		001000000005 /* ShortcutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000005 /* ShortcutManager.swift */; };
+		001000000006 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000006 /* SettingsManager.swift */; };
+		001000000007 /* StorageService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000007 /* StorageService.swift */; };
+		001000000008 /* MenuBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000008 /* MenuBarView.swift */; };
+		001000000009 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000009 /* SettingsView.swift */; };
+		001000000010 /* GeneralSettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000010 /* GeneralSettingsTab.swift */; };
+		001000000011 /* CaptureSettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000011 /* CaptureSettingsTab.swift */; };
+		001000000012 /* RecordingSettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000012 /* RecordingSettingsTab.swift */; };
+		001000000013 /* ShortcutsSettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000013 /* ShortcutsSettingsTab.swift */; };
+		001000000014 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 002000000014 /* Assets.xcassets */; };
+		001000000015 /* SettingsManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000015 /* SettingsManagerTests.swift */; };
+		001000000016 /* PermissionManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000016 /* PermissionManagerTests.swift */; };
+		001000000021 /* CaptureTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000021 /* CaptureTypes.swift */; };
+		001000000022 /* CaptureResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000022 /* CaptureResult.swift */; };
+		001000000023 /* CaptureError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000023 /* CaptureError.swift */; };
+		001000000024 /* MultiMonitorSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000024 /* MultiMonitorSupport.swift */; };
+		001000000025 /* CaptureService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000025 /* CaptureService.swift */; };
+		001000000026 /* SelectionWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000026 /* SelectionWindow.swift */; };
+		001000000027 /* SelectionOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000027 /* SelectionOverlayView.swift */; };
+		001000000028 /* CrosshairView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000028 /* CrosshairView.swift */; };
+		001000000029 /* DimensionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000029 /* DimensionsView.swift */; };
+		001000000030 /* InstructionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000030 /* InstructionsView.swift */; };
+		001000000031 /* CaptureServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000031 /* CaptureServiceTests.swift */; };
+		001000000032 /* CaptureIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000032 /* CaptureIntegrationTests.swift */; };
+		001000000033 /* WindowHighlightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000033 /* WindowHighlightView.swift */; };
+		001000000034 /* WindowPickerOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000034 /* WindowPickerOverlay.swift */; };
+		001000000035 /* WindowPickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 002000000035 /* WindowPickerController.swift */; };
+		03574871518B71310E2F2E4B /* RecordingControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2FA624D3C2FF53764130A3FD /* RecordingControlsView.swift */; };
+		0728C0154F06C32C55B44A78 /* GIFConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B5EF56160892122338C79AE4 /* GIFConfigTests.swift */; };
 		0A404F09A4007F49582154E0 /* QuickAccessWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B834832BBFC0483505B7E51 /* QuickAccessWindow.swift */; };
 		0B784E21945A155FDF989C73 /* DraggableThumbnail.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2814A49827B11DABC820EC3 /* DraggableThumbnail.swift */; };
+		0FAD7EE6A00A0BE2121B252E /* AVAudioPCMBuffer+CMSampleBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D1A94268E0E40168D5D88DD /* AVAudioPCMBuffer+CMSampleBuffer.swift */; };
+		13C37F5E3F47D824DE09B9E6 /* RecordingError.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4B96A9A2D554FFC7D4C0310 /* RecordingError.swift */; };
+		13FCF7BD3D7637A6C7C2A33F /* KeyPressTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 295DD726DF265925EA37CC87 /* KeyPressTests.swift */; };
+		1EF32CAB78F722987665A686 /* RecordingControlsWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27055F6ADB6A713051C33061 /* RecordingControlsWindow.swift */; };
+		21DA2AE303267C85E31B0A42 /* RecordingStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA20823760F000322A890063 /* RecordingStateTests.swift */; };
+		2FC61E46D6C4AF082FCF1BFC /* GIFEncoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 091B064BAF8FE3BDC40BB257 /* GIFEncoderTests.swift */; };
+		32F72313E6DD0A87D19966F9 /* RecordingRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = D58E7ACCE6443BF6FC3C464B /* RecordingRegion.swift */; };
+		4BFE5E537ABFF9E24683E4DE /* KeystrokeOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 527E7980066B998A996A2E8F /* KeystrokeOverlayView.swift */; };
+		4FAAA6865ED7F415503FE7F8 /* VideoConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA15561953D9A164213EAB8C /* VideoConfig.swift */; };
+		550A443AB0A431DA762C5972 /* ClickOverlayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1109C2D7B38126A7DB49D23 /* ClickOverlayController.swift */; };
 		6DDE491EBF18F89E6158AF1E /* QuickAccessIntegrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 610F4221983B5BB76605F0EA /* QuickAccessIntegrationTests.swift */; };
 		736A408A938630C2493F6115 /* QuickAccessItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 456246048E864D1DE8F32EA8 /* QuickAccessItemView.swift */; };
+		7672A81E387599506B582AB2 /* KeyPress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D080D4A5EDC26EF7C801397 /* KeyPress.swift */; };
 		7C59491F8D6CCBB0C749723D /* CaptureItemTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD034097BA82EED8641E7A87 /* CaptureItemTests.swift */; };
+		88C0BE6056A6B1B27963A7E9 /* RecordingResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F01D7AFA70936FD23F7C4AF /* RecordingResult.swift */; };
+		8C5320144E11A0748F329C16 /* RecordingServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 139A5B0882EC2C92EB173508 /* RecordingServiceTests.swift */; };
+		97CF24911548B27C53610A5E /* ClickOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65A1D3DF4E368B394D1422A /* ClickOverlayView.swift */; };
+		A196E1D373D10CAD84775920 /* RecordingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20BE6C2677F669C954F7B97E /* RecordingService.swift */; };
+		A3330D7777BEFA0F39B4CD50 /* AudioRecordingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53B5E4ABF97C08E82FEE2C90 /* AudioRecordingTests.swift */; };
+		AA31D8512D0E4886F63D9270 /* GIFConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9F7AC248123F6B5D6397DF1 /* GIFConfig.swift */; };
 		B46B4EC196E4DEE97A9406AD /* ThumbnailGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77754D29B5A46DF4AF42E7BA /* ThumbnailGenerator.swift */; };
+		B911F92874D927B7094ADBD3 /* VideoConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 260DC2D01F165BA7682397A8 /* VideoConfigTests.swift */; };
 		BCFB4EFA96F33AD07559F0F2 /* CaptureQueueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8894D0EB3F0C5461BDDEE3B /* CaptureQueueTests.swift */; };
+		C3CDB95603E1B4F53C2D129A /* ClickEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6FBDF80118DA955963DDD86 /* ClickEffect.swift */; };
+		D2E3000E89A512CE5830DB47 /* ClickEffectTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D6B223745B248CD134B37B2B /* ClickEffectTests.swift */; };
+		D78EA85F7D55D5522B123D57 /* KeystrokeOverlayController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F98C917D4181B6AC9DC55D0 /* KeystrokeOverlayController.swift */; };
+		D95D6AC00E3F8AE4720B3D47 /* GIFEncoder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6330FCCF9F80A06A5949B35E /* GIFEncoder.swift */; };
+		DD49D8B8C89E3395678CED08 /* GIFRecordingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF47893401B81D0760BC5CE5 /* GIFRecordingTests.swift */; };
 		E18E456FB2A501AE263D9B2A /* QuickAccessWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 64D54810B404C13198CB8C34 /* QuickAccessWindowController.swift */; };
 		E68543E7AFC4DB53BA6CED4B /* VisualEffectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB364EA0963BA5D464849A4D /* VisualEffectView.swift */; };
+		F56D5496CD2F36168101A29C /* RecordingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEC0FEAE470A4BA56BE051FA /* RecordingState.swift */; };
 		F58F4FC4A89BCC33D81C6DAF /* QuickAccessContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82C945B0A18CCDA12A536727 /* QuickAccessContentView.swift */; };
 		F74D459C9CEE8D9CAFB300CF /* CaptureItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2B4D55AD32E8D56E43F8B9 /* CaptureItem.swift */; };
 		F9824CBB9EC885F8B19F0692 /* CaptureQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18340C5958F9EDF6676E144 /* CaptureQueue.swift */; };
+		FA5A670AFD201D005531A4C7 /* RecordingFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09BC327374EE5231386DA4C6 /* RecordingFormat.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		'003000000001' = {
+		003000000001 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 004000000001;
+			containerPortal = 004000000001 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 005000000001;
 			remoteInfo = ScreenPro;
@@ -63,64 +90,91 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		'002000000001' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenProApp.swift; sourceTree = "<group>"; };
-		'002000000002' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		'002000000003' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
-		'002000000004' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
-		'002000000005' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutManager.swift; sourceTree = "<group>"; };
-		'002000000006' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
-		'002000000007' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
-		'002000000008' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
-		'002000000009' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		'002000000010' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingsTab.swift; sourceTree = "<group>"; };
-		'002000000011' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSettingsTab.swift; sourceTree = "<group>"; };
-		'002000000012' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingSettingsTab.swift; sourceTree = "<group>"; };
-		'002000000013' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutsSettingsTab.swift; sourceTree = "<group>"; };
-		'002000000014' = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		'002000000015' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManagerTests.swift; sourceTree = "<group>"; };
-		'002000000016' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManagerTests.swift; sourceTree = "<group>"; };
-		'002000000017' = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		'002000000018' = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ScreenPro.entitlements; sourceTree = "<group>"; };
-		'002000000019' = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScreenPro.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		'002000000020' = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScreenProTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		'002000000021' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureTypes.swift; sourceTree = "<group>"; };
-		'002000000022' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureResult.swift; sourceTree = "<group>"; };
-		'002000000023' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureError.swift; sourceTree = "<group>"; };
-		'002000000024' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiMonitorSupport.swift; sourceTree = "<group>"; };
-		'002000000025' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureService.swift; sourceTree = "<group>"; };
-		'002000000026' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionWindow.swift; sourceTree = "<group>"; };
-		'002000000027' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionOverlayView.swift; sourceTree = "<group>"; };
-		'002000000028' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrosshairView.swift; sourceTree = "<group>"; };
-		'002000000029' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DimensionsView.swift; sourceTree = "<group>"; };
-		'002000000030' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionsView.swift; sourceTree = "<group>"; };
-		'002000000031' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureServiceTests.swift; sourceTree = "<group>"; };
-		'002000000032' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureIntegrationTests.swift; sourceTree = "<group>"; };
-		'002000000033' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowHighlightView.swift; sourceTree = "<group>"; };
-		'002000000034' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPickerOverlay.swift; sourceTree = "<group>"; };
-		'002000000035' = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPickerController.swift; sourceTree = "<group>"; };
+		002000000001 /* ScreenProApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenProApp.swift; sourceTree = "<group>"; };
+		002000000002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		002000000003 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
+		002000000004 /* PermissionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManager.swift; sourceTree = "<group>"; };
+		002000000005 /* ShortcutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutManager.swift; sourceTree = "<group>"; };
+		002000000006 /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
+		002000000007 /* StorageService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageService.swift; sourceTree = "<group>"; };
+		002000000008 /* MenuBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarView.swift; sourceTree = "<group>"; };
+		002000000009 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		002000000010 /* GeneralSettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralSettingsTab.swift; sourceTree = "<group>"; };
+		002000000011 /* CaptureSettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureSettingsTab.swift; sourceTree = "<group>"; };
+		002000000012 /* RecordingSettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingSettingsTab.swift; sourceTree = "<group>"; };
+		002000000013 /* ShortcutsSettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutsSettingsTab.swift; sourceTree = "<group>"; };
+		002000000014 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		002000000015 /* SettingsManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManagerTests.swift; sourceTree = "<group>"; };
+		002000000016 /* PermissionManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionManagerTests.swift; sourceTree = "<group>"; };
+		002000000017 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		002000000018 /* ScreenPro.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ScreenPro.entitlements; sourceTree = "<group>"; };
+		002000000019 /* ScreenPro.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScreenPro.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		002000000020 /* ScreenProTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScreenProTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		002000000021 /* CaptureTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureTypes.swift; sourceTree = "<group>"; };
+		002000000022 /* CaptureResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureResult.swift; sourceTree = "<group>"; };
+		002000000023 /* CaptureError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureError.swift; sourceTree = "<group>"; };
+		002000000024 /* MultiMonitorSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultiMonitorSupport.swift; sourceTree = "<group>"; };
+		002000000025 /* CaptureService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureService.swift; sourceTree = "<group>"; };
+		002000000026 /* SelectionWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionWindow.swift; sourceTree = "<group>"; };
+		002000000027 /* SelectionOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectionOverlayView.swift; sourceTree = "<group>"; };
+		002000000028 /* CrosshairView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CrosshairView.swift; sourceTree = "<group>"; };
+		002000000029 /* DimensionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DimensionsView.swift; sourceTree = "<group>"; };
+		002000000030 /* InstructionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InstructionsView.swift; sourceTree = "<group>"; };
+		002000000031 /* CaptureServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureServiceTests.swift; sourceTree = "<group>"; };
+		002000000032 /* CaptureIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureIntegrationTests.swift; sourceTree = "<group>"; };
+		002000000033 /* WindowHighlightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowHighlightView.swift; sourceTree = "<group>"; };
+		002000000034 /* WindowPickerOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPickerOverlay.swift; sourceTree = "<group>"; };
+		002000000035 /* WindowPickerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPickerController.swift; sourceTree = "<group>"; };
+		091B064BAF8FE3BDC40BB257 /* GIFEncoderTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GIFEncoderTests.swift; sourceTree = "<group>"; };
+		09BC327374EE5231386DA4C6 /* RecordingFormat.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RecordingFormat.swift; path = Recording/Models/RecordingFormat.swift; sourceTree = "<group>"; };
+		139A5B0882EC2C92EB173508 /* RecordingServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecordingServiceTests.swift; sourceTree = "<group>"; };
+		20BE6C2677F669C954F7B97E /* RecordingService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RecordingService.swift; path = Recording/RecordingService.swift; sourceTree = "<group>"; };
+		260DC2D01F165BA7682397A8 /* VideoConfigTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VideoConfigTests.swift; sourceTree = "<group>"; };
+		27055F6ADB6A713051C33061 /* RecordingControlsWindow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RecordingControlsWindow.swift; path = Recording/RecordingControlsWindow.swift; sourceTree = "<group>"; };
+		295DD726DF265925EA37CC87 /* KeyPressTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KeyPressTests.swift; sourceTree = "<group>"; };
+		2FA624D3C2FF53764130A3FD /* RecordingControlsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RecordingControlsView.swift; path = Recording/RecordingControlsView.swift; sourceTree = "<group>"; };
 		456246048E864D1DE8F32EA8 /* QuickAccessItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = QuickAccessItemView.swift; path = ScreenPro/Features/QuickAccess/QuickAccessItemView.swift; sourceTree = SOURCE_ROOT; };
 		4F2B4D55AD32E8D56E43F8B9 /* CaptureItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CaptureItem.swift; path = ScreenPro/Features/QuickAccess/CaptureItem.swift; sourceTree = SOURCE_ROOT; };
+		527E7980066B998A996A2E8F /* KeystrokeOverlayView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = KeystrokeOverlayView.swift; path = Recording/KeystrokeOverlayView.swift; sourceTree = "<group>"; };
+		53B5E4ABF97C08E82FEE2C90 /* AudioRecordingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AudioRecordingTests.swift; sourceTree = "<group>"; };
 		5B834832BBFC0483505B7E51 /* QuickAccessWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = QuickAccessWindow.swift; path = ScreenPro/Features/QuickAccess/QuickAccessWindow.swift; sourceTree = SOURCE_ROOT; };
 		610F4221983B5BB76605F0EA /* QuickAccessIntegrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = QuickAccessIntegrationTests.swift; path = ScreenProTests/QuickAccess/QuickAccessIntegrationTests.swift; sourceTree = SOURCE_ROOT; };
+		6330FCCF9F80A06A5949B35E /* GIFEncoder.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GIFEncoder.swift; path = Recording/GIFEncoder.swift; sourceTree = "<group>"; };
 		64D54810B404C13198CB8C34 /* QuickAccessWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = QuickAccessWindowController.swift; path = ScreenPro/Features/QuickAccess/QuickAccessWindowController.swift; sourceTree = SOURCE_ROOT; };
+		6F01D7AFA70936FD23F7C4AF /* RecordingResult.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RecordingResult.swift; path = Recording/Models/RecordingResult.swift; sourceTree = "<group>"; };
+		6F98C917D4181B6AC9DC55D0 /* KeystrokeOverlayController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = KeystrokeOverlayController.swift; path = Recording/KeystrokeOverlayController.swift; sourceTree = "<group>"; };
 		77754D29B5A46DF4AF42E7BA /* ThumbnailGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ThumbnailGenerator.swift; path = ScreenPro/Features/QuickAccess/ThumbnailGenerator.swift; sourceTree = SOURCE_ROOT; };
+		7D080D4A5EDC26EF7C801397 /* KeyPress.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = KeyPress.swift; path = Recording/Models/KeyPress.swift; sourceTree = "<group>"; };
+		7D1A94268E0E40168D5D88DD /* AVAudioPCMBuffer+CMSampleBuffer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "AVAudioPCMBuffer+CMSampleBuffer.swift"; path = "Extensions/AVAudioPCMBuffer+CMSampleBuffer.swift"; sourceTree = "<group>"; };
 		82C945B0A18CCDA12A536727 /* QuickAccessContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = QuickAccessContentView.swift; path = ScreenPro/Features/QuickAccess/QuickAccessContentView.swift; sourceTree = SOURCE_ROOT; };
+		B5EF56160892122338C79AE4 /* GIFConfigTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GIFConfigTests.swift; sourceTree = "<group>"; };
+		B65A1D3DF4E368B394D1422A /* ClickOverlayView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ClickOverlayView.swift; path = Recording/ClickOverlayView.swift; sourceTree = "<group>"; };
 		BB364EA0963BA5D464849A4D /* VisualEffectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = VisualEffectView.swift; path = ScreenPro/Core/Extensions/VisualEffectView.swift; sourceTree = SOURCE_ROOT; };
+		BF47893401B81D0760BC5CE5 /* GIFRecordingTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GIFRecordingTests.swift; sourceTree = "<group>"; };
 		C18340C5958F9EDF6676E144 /* CaptureQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CaptureQueue.swift; path = ScreenPro/Features/QuickAccess/CaptureQueue.swift; sourceTree = SOURCE_ROOT; };
 		C2814A49827B11DABC820EC3 /* DraggableThumbnail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DraggableThumbnail.swift; path = ScreenPro/Features/QuickAccess/DraggableThumbnail.swift; sourceTree = SOURCE_ROOT; };
+		C4B96A9A2D554FFC7D4C0310 /* RecordingError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RecordingError.swift; path = Recording/Models/RecordingError.swift; sourceTree = "<group>"; };
+		C9F7AC248123F6B5D6397DF1 /* GIFConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GIFConfig.swift; path = Recording/Models/GIFConfig.swift; sourceTree = "<group>"; };
+		D58E7ACCE6443BF6FC3C464B /* RecordingRegion.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RecordingRegion.swift; path = Recording/Models/RecordingRegion.swift; sourceTree = "<group>"; };
+		D6B223745B248CD134B37B2B /* ClickEffectTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ClickEffectTests.swift; sourceTree = "<group>"; };
+		DA15561953D9A164213EAB8C /* VideoConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = VideoConfig.swift; path = Recording/Models/VideoConfig.swift; sourceTree = "<group>"; };
+		E1109C2D7B38126A7DB49D23 /* ClickOverlayController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ClickOverlayController.swift; path = Recording/ClickOverlayController.swift; sourceTree = "<group>"; };
+		E6FBDF80118DA955963DDD86 /* ClickEffect.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ClickEffect.swift; path = Recording/Models/ClickEffect.swift; sourceTree = "<group>"; };
+		EA20823760F000322A890063 /* RecordingStateTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = RecordingStateTests.swift; sourceTree = "<group>"; };
 		F8894D0EB3F0C5461BDDEE3B /* CaptureQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CaptureQueueTests.swift; path = ScreenProTests/QuickAccess/CaptureQueueTests.swift; sourceTree = SOURCE_ROOT; };
 		FD034097BA82EED8641E7A87 /* CaptureItemTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CaptureItemTests.swift; path = ScreenProTests/QuickAccess/CaptureItemTests.swift; sourceTree = SOURCE_ROOT; };
+		FEC0FEAE470A4BA56BE051FA /* RecordingState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RecordingState.swift; path = Recording/Models/RecordingState.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		'006000000001' = {
+		006000000001 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		'006000000002' = {
+		006000000002 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -130,12 +184,12 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		'007000000001' = {
+		007000000001 = {
 			isa = PBXGroup;
 			children = (
-				007000000002,
-				007000000010,
-				007000000011,
+				007000000002 /* ScreenPro */,
+				007000000010 /* ScreenProTests */,
+				007000000011 /* Products */,
 				4F2B4D55AD32E8D56E43F8B9 /* CaptureItem.swift */,
 				C18340C5958F9EDF6676E144 /* CaptureQueue.swift */,
 				5B834832BBFC0483505B7E51 /* QuickAccessWindow.swift */,
@@ -151,160 +205,211 @@
 			);
 			sourceTree = "<group>";
 		};
-		'007000000002' = {
+		007000000002 /* ScreenPro */ = {
 			isa = PBXGroup;
 			children = (
-				002000000001,
-				002000000002,
-				002000000017,
-				002000000018,
-				007000000003,
-				007000000006,
-				007000000009,
+				002000000001 /* ScreenProApp.swift */,
+				002000000002 /* AppDelegate.swift */,
+				002000000017 /* Info.plist */,
+				002000000018 /* ScreenPro.entitlements */,
+				007000000003 /* Core */,
+				007000000006 /* Features */,
+				007000000009 /* Resources */,
 			);
 			path = ScreenPro;
 			sourceTree = "<group>";
 		};
-		'007000000003' = {
+		007000000003 /* Core */ = {
 			isa = PBXGroup;
 			children = (
-				002000000003,
-				007000000004,
+				002000000003 /* AppCoordinator.swift */,
+				007000000004 /* Services */,
+				8A16D7CC31139C332CB61E3D /* Extensions */,
 			);
 			path = Core;
 			sourceTree = "<group>";
 		};
-		'007000000004' = {
+		007000000004 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				002000000004,
-				002000000005,
-				002000000006,
-				002000000007,
+				002000000004 /* PermissionManager.swift */,
+				002000000005 /* ShortcutManager.swift */,
+				002000000006 /* SettingsManager.swift */,
+				002000000007 /* StorageService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
 		};
-		'007000000006' = {
+		007000000006 /* Features */ = {
 			isa = PBXGroup;
 			children = (
-				007000000007,
-				007000000008,
-				007000000012,
+				007000000007 /* MenuBar */,
+				007000000008 /* Settings */,
+				007000000012 /* Capture */,
+				31E28C0DF1E0BDA05E1DF7D7 /* Recording */,
 			);
 			path = Features;
 			sourceTree = "<group>";
 		};
-		'007000000007' = {
+		007000000007 /* MenuBar */ = {
 			isa = PBXGroup;
 			children = (
-				002000000008,
+				002000000008 /* MenuBarView.swift */,
 			);
 			path = MenuBar;
 			sourceTree = "<group>";
 		};
-		'007000000008' = {
+		007000000008 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				002000000009,
-				002000000010,
-				002000000011,
-				002000000012,
-				002000000013,
+				002000000009 /* SettingsView.swift */,
+				002000000010 /* GeneralSettingsTab.swift */,
+				002000000011 /* CaptureSettingsTab.swift */,
+				002000000012 /* RecordingSettingsTab.swift */,
+				002000000013 /* ShortcutsSettingsTab.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
 		};
-		'007000000009' = {
+		007000000009 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				002000000014,
+				002000000014 /* Assets.xcassets */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		'007000000010' = {
+		007000000010 /* ScreenProTests */ = {
 			isa = PBXGroup;
 			children = (
-				002000000015,
-				002000000016,
-				007000000014,
-				007000000015,
+				002000000015 /* SettingsManagerTests.swift */,
+				002000000016 /* PermissionManagerTests.swift */,
+				007000000014 /* Unit */,
+				007000000015 /* Integration */,
 			);
 			path = ScreenProTests;
 			sourceTree = "<group>";
 		};
-		'007000000011' = {
+		007000000011 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				002000000019,
-				002000000020,
+				002000000019 /* ScreenPro.app */,
+				002000000020 /* ScreenProTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		'007000000012' = {
+		007000000012 /* Capture */ = {
 			isa = PBXGroup;
 			children = (
-				002000000021,
-				002000000022,
-				002000000023,
-				002000000024,
-				002000000025,
-				007000000013,
-				007000000016,
+				002000000021 /* CaptureTypes.swift */,
+				002000000022 /* CaptureResult.swift */,
+				002000000023 /* CaptureError.swift */,
+				002000000024 /* MultiMonitorSupport.swift */,
+				002000000025 /* CaptureService.swift */,
+				007000000013 /* SelectionOverlay */,
+				007000000016 /* WindowPicker */,
 			);
 			path = Capture;
 			sourceTree = "<group>";
 		};
-		'007000000013' = {
+		007000000013 /* SelectionOverlay */ = {
 			isa = PBXGroup;
 			children = (
-				002000000026,
-				002000000027,
-				002000000028,
-				002000000029,
-				002000000030,
+				002000000026 /* SelectionWindow.swift */,
+				002000000027 /* SelectionOverlayView.swift */,
+				002000000028 /* CrosshairView.swift */,
+				002000000029 /* DimensionsView.swift */,
+				002000000030 /* InstructionsView.swift */,
 			);
 			path = SelectionOverlay;
 			sourceTree = "<group>";
 		};
-		'007000000014' = {
+		007000000014 /* Unit */ = {
 			isa = PBXGroup;
 			children = (
-				002000000031,
+				002000000031 /* CaptureServiceTests.swift */,
+				D6B223745B248CD134B37B2B /* ClickEffectTests.swift */,
+				B5EF56160892122338C79AE4 /* GIFConfigTests.swift */,
+				091B064BAF8FE3BDC40BB257 /* GIFEncoderTests.swift */,
+				295DD726DF265925EA37CC87 /* KeyPressTests.swift */,
+				EA20823760F000322A890063 /* RecordingStateTests.swift */,
+				260DC2D01F165BA7682397A8 /* VideoConfigTests.swift */,
 			);
 			path = Unit;
 			sourceTree = "<group>";
 		};
-		'007000000015' = {
+		007000000015 /* Integration */ = {
 			isa = PBXGroup;
 			children = (
-				002000000032,
+				002000000032 /* CaptureIntegrationTests.swift */,
+				53B5E4ABF97C08E82FEE2C90 /* AudioRecordingTests.swift */,
+				BF47893401B81D0760BC5CE5 /* GIFRecordingTests.swift */,
+				139A5B0882EC2C92EB173508 /* RecordingServiceTests.swift */,
 			);
 			path = Integration;
 			sourceTree = "<group>";
 		};
-		'007000000016' = {
+		007000000016 /* WindowPicker */ = {
 			isa = PBXGroup;
 			children = (
-				002000000033,
-				002000000034,
-				002000000035,
+				002000000033 /* WindowHighlightView.swift */,
+				002000000034 /* WindowPickerOverlay.swift */,
+				002000000035 /* WindowPickerController.swift */,
 			);
 			path = WindowPicker;
+			sourceTree = "<group>";
+		};
+		31E28C0DF1E0BDA05E1DF7D7 /* Recording */ = {
+			isa = PBXGroup;
+			children = (
+				E822A53E1A653062CD7A30DC /* Models */,
+				E1109C2D7B38126A7DB49D23 /* ClickOverlayController.swift */,
+				B65A1D3DF4E368B394D1422A /* ClickOverlayView.swift */,
+				6330FCCF9F80A06A5949B35E /* GIFEncoder.swift */,
+				6F98C917D4181B6AC9DC55D0 /* KeystrokeOverlayController.swift */,
+				527E7980066B998A996A2E8F /* KeystrokeOverlayView.swift */,
+				2FA624D3C2FF53764130A3FD /* RecordingControlsView.swift */,
+				27055F6ADB6A713051C33061 /* RecordingControlsWindow.swift */,
+				20BE6C2677F669C954F7B97E /* RecordingService.swift */,
+			);
+			name = Recording;
+			sourceTree = "<group>";
+		};
+		8A16D7CC31139C332CB61E3D /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				7D1A94268E0E40168D5D88DD /* AVAudioPCMBuffer+CMSampleBuffer.swift */,
+			);
+			name = Extensions;
+			sourceTree = "<group>";
+		};
+		E822A53E1A653062CD7A30DC /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				E6FBDF80118DA955963DDD86 /* ClickEffect.swift */,
+				C9F7AC248123F6B5D6397DF1 /* GIFConfig.swift */,
+				7D080D4A5EDC26EF7C801397 /* KeyPress.swift */,
+				C4B96A9A2D554FFC7D4C0310 /* RecordingError.swift */,
+				09BC327374EE5231386DA4C6 /* RecordingFormat.swift */,
+				D58E7ACCE6443BF6FC3C464B /* RecordingRegion.swift */,
+				6F01D7AFA70936FD23F7C4AF /* RecordingResult.swift */,
+				FEC0FEAE470A4BA56BE051FA /* RecordingState.swift */,
+				DA15561953D9A164213EAB8C /* VideoConfig.swift */,
+			);
+			name = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		'005000000001' = {
+		005000000001 /* ScreenPro */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 009000000001;
+			buildConfigurationList = 009000000001 /* Build configuration list for PBXNativeTarget "ScreenPro" */;
 			buildPhases = (
-				008000000001,
-				006000000001,
-				010000000001,
+				008000000001 /* Sources */,
+				006000000001 /* Frameworks */,
+				010000000001 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -312,30 +417,30 @@
 			);
 			name = ScreenPro;
 			productName = ScreenPro;
-			productReference = 002000000019;
+			productReference = 002000000019 /* ScreenPro.app */;
 			productType = "com.apple.product-type.application";
 		};
-		'005000000002' = {
+		005000000002 /* ScreenProTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 009000000002;
+			buildConfigurationList = 009000000002 /* Build configuration list for PBXNativeTarget "ScreenProTests" */;
 			buildPhases = (
-				008000000002,
-				006000000002,
+				008000000002 /* Sources */,
+				006000000002 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				011000000001,
+				011000000001 /* PBXTargetDependency */,
 			);
 			name = ScreenProTests;
 			productName = ScreenProTests;
-			productReference = 002000000020;
+			productReference = 002000000020 /* ScreenProTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		'004000000001' = {
+		004000000001 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
@@ -351,7 +456,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 009000000003;
+			buildConfigurationList = 009000000003 /* Build configuration list for PBXProject "ScreenPro" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -360,58 +465,58 @@
 				Base,
 			);
 			mainGroup = 007000000001;
-			productRefGroup = 007000000011;
+			productRefGroup = 007000000011 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				005000000001,
-				005000000002,
+				005000000001 /* ScreenPro */,
+				005000000002 /* ScreenProTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		'010000000001' = {
+		010000000001 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				001000000014,
+				001000000014 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		'008000000001' = {
+		008000000001 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				001000000001,
-				001000000002,
-				001000000003,
-				001000000004,
-				001000000005,
-				001000000006,
-				001000000007,
-				001000000008,
-				001000000009,
-				001000000010,
-				001000000011,
-				001000000012,
-				001000000013,
-				001000000021,
-				001000000022,
-				001000000023,
-				001000000024,
-				001000000025,
-				001000000026,
-				001000000027,
-				001000000028,
-				001000000029,
-				001000000030,
-				001000000033,
-				001000000034,
-				001000000035,
+				001000000001 /* ScreenProApp.swift in Sources */,
+				001000000002 /* AppDelegate.swift in Sources */,
+				001000000003 /* AppCoordinator.swift in Sources */,
+				001000000004 /* PermissionManager.swift in Sources */,
+				001000000005 /* ShortcutManager.swift in Sources */,
+				001000000006 /* SettingsManager.swift in Sources */,
+				001000000007 /* StorageService.swift in Sources */,
+				001000000008 /* MenuBarView.swift in Sources */,
+				001000000009 /* SettingsView.swift in Sources */,
+				001000000010 /* GeneralSettingsTab.swift in Sources */,
+				001000000011 /* CaptureSettingsTab.swift in Sources */,
+				001000000012 /* RecordingSettingsTab.swift in Sources */,
+				001000000013 /* ShortcutsSettingsTab.swift in Sources */,
+				001000000021 /* CaptureTypes.swift in Sources */,
+				001000000022 /* CaptureResult.swift in Sources */,
+				001000000023 /* CaptureError.swift in Sources */,
+				001000000024 /* MultiMonitorSupport.swift in Sources */,
+				001000000025 /* CaptureService.swift in Sources */,
+				001000000026 /* SelectionWindow.swift in Sources */,
+				001000000027 /* SelectionOverlayView.swift in Sources */,
+				001000000028 /* CrosshairView.swift in Sources */,
+				001000000029 /* DimensionsView.swift in Sources */,
+				001000000030 /* InstructionsView.swift in Sources */,
+				001000000033 /* WindowHighlightView.swift in Sources */,
+				001000000034 /* WindowPickerOverlay.swift in Sources */,
+				001000000035 /* WindowPickerController.swift in Sources */,
 				F74D459C9CEE8D9CAFB300CF /* CaptureItem.swift in Sources */,
 				F9824CBB9EC885F8B19F0692 /* CaptureQueue.swift in Sources */,
 				0A404F09A4007F49582154E0 /* QuickAccessWindow.swift in Sources */,
@@ -421,35 +526,62 @@
 				F58F4FC4A89BCC33D81C6DAF /* QuickAccessContentView.swift in Sources */,
 				0B784E21945A155FDF989C73 /* DraggableThumbnail.swift in Sources */,
 				E68543E7AFC4DB53BA6CED4B /* VisualEffectView.swift in Sources */,
+				550A443AB0A431DA762C5972 /* ClickOverlayController.swift in Sources */,
+				97CF24911548B27C53610A5E /* ClickOverlayView.swift in Sources */,
+				D95D6AC00E3F8AE4720B3D47 /* GIFEncoder.swift in Sources */,
+				D78EA85F7D55D5522B123D57 /* KeystrokeOverlayController.swift in Sources */,
+				4BFE5E537ABFF9E24683E4DE /* KeystrokeOverlayView.swift in Sources */,
+				03574871518B71310E2F2E4B /* RecordingControlsView.swift in Sources */,
+				1EF32CAB78F722987665A686 /* RecordingControlsWindow.swift in Sources */,
+				A196E1D373D10CAD84775920 /* RecordingService.swift in Sources */,
+				C3CDB95603E1B4F53C2D129A /* ClickEffect.swift in Sources */,
+				AA31D8512D0E4886F63D9270 /* GIFConfig.swift in Sources */,
+				7672A81E387599506B582AB2 /* KeyPress.swift in Sources */,
+				13C37F5E3F47D824DE09B9E6 /* RecordingError.swift in Sources */,
+				FA5A670AFD201D005531A4C7 /* RecordingFormat.swift in Sources */,
+				32F72313E6DD0A87D19966F9 /* RecordingRegion.swift in Sources */,
+				88C0BE6056A6B1B27963A7E9 /* RecordingResult.swift in Sources */,
+				F56D5496CD2F36168101A29C /* RecordingState.swift in Sources */,
+				4FAAA6865ED7F415503FE7F8 /* VideoConfig.swift in Sources */,
+				0FAD7EE6A00A0BE2121B252E /* AVAudioPCMBuffer+CMSampleBuffer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		'008000000002' = {
+		008000000002 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				001000000015,
-				001000000016,
-				001000000031,
-				001000000032,
+				001000000015 /* SettingsManagerTests.swift in Sources */,
+				001000000016 /* PermissionManagerTests.swift in Sources */,
+				001000000031 /* CaptureServiceTests.swift in Sources */,
+				001000000032 /* CaptureIntegrationTests.swift in Sources */,
 				7C59491F8D6CCBB0C749723D /* CaptureItemTests.swift in Sources */,
 				BCFB4EFA96F33AD07559F0F2 /* CaptureQueueTests.swift in Sources */,
 				6DDE491EBF18F89E6158AF1E /* QuickAccessIntegrationTests.swift in Sources */,
+				D2E3000E89A512CE5830DB47 /* ClickEffectTests.swift in Sources */,
+				0728C0154F06C32C55B44A78 /* GIFConfigTests.swift in Sources */,
+				2FC61E46D6C4AF082FCF1BFC /* GIFEncoderTests.swift in Sources */,
+				13FCF7BD3D7637A6C7C2A33F /* KeyPressTests.swift in Sources */,
+				21DA2AE303267C85E31B0A42 /* RecordingStateTests.swift in Sources */,
+				B911F92874D927B7094ADBD3 /* VideoConfigTests.swift in Sources */,
+				A3330D7777BEFA0F39B4CD50 /* AudioRecordingTests.swift in Sources */,
+				DD49D8B8C89E3395678CED08 /* GIFRecordingTests.swift in Sources */,
+				8C5320144E11A0748F329C16 /* RecordingServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		'011000000001' = {
+		011000000001 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 005000000001;
-			targetProxy = 003000000001;
+			target = 005000000001 /* ScreenPro */;
+			targetProxy = 003000000001 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		'012000000001' = {
+		012000000001 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -513,7 +645,7 @@
 			};
 			name = Debug;
 		};
-		'012000000002' = {
+		012000000002 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -569,7 +701,7 @@
 			};
 			name = Release;
 		};
-		'012000000003' = {
+		012000000003 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -597,7 +729,7 @@
 			};
 			name = Debug;
 		};
-		'012000000004' = {
+		012000000004 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -625,7 +757,7 @@
 			};
 			name = Release;
 		};
-		'012000000005' = {
+		012000000005 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -643,7 +775,7 @@
 			};
 			name = Debug;
 		};
-		'012000000006' = {
+		012000000006 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -664,34 +796,34 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		'009000000001' = {
+		009000000001 /* Build configuration list for PBXNativeTarget "ScreenPro" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				012000000003,
-				012000000004,
+				012000000003 /* Debug */,
+				012000000004 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		'009000000002' = {
+		009000000002 /* Build configuration list for PBXNativeTarget "ScreenProTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				012000000005,
-				012000000006,
+				012000000005 /* Debug */,
+				012000000006 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		'009000000003' = {
+		009000000003 /* Build configuration list for PBXProject "ScreenPro" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				012000000001,
-				012000000002,
+				012000000001 /* Debug */,
+				012000000002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 004000000001;
+	rootObject = 004000000001 /* Project object */;
 }
