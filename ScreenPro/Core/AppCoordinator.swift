@@ -104,6 +104,42 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
     /// are added to the Xcode project build phase.
     var annotationEditorController: NSWindowController?
 
+    /// The scrolling capture service (T027)
+    private(set) lazy var scrollingCaptureService: ScrollingCaptureService = {
+        ScrollingCaptureService()
+    }()
+
+    /// The scrolling capture preview window (T027)
+    private var scrollingCaptureWindow: ScrollingCaptureWindow?
+
+    /// The text recognition service (T036)
+    private(set) lazy var textRecognitionService: TextRecognitionService = {
+        let settings = settingsManager.settings
+        return TextRecognitionService(
+            languages: settings.ocrLanguages,
+            autoCopy: settings.ocrCopyToClipboardAutomatically
+        )
+    }()
+
+    /// The OCR result window (T036)
+    private var ocrResultWindow: OCRResultWindow?
+
+    /// The self-timer controller (T044)
+    private(set) lazy var selfTimerController: SelfTimerController = {
+        SelfTimerController()
+    }()
+
+    /// The countdown overlay window (T044)
+    private var countdownWindow: CountdownWindow?
+
+    /// The screen freeze controller (T049)
+    private(set) lazy var screenFreezeController: ScreenFreezeController = {
+        ScreenFreezeController()
+    }()
+
+    /// The background tool window (T068)
+    private var backgroundToolWindow: BackgroundToolWindow?
+
     // MARK: - Private Properties
 
     private var cancellables = Set<AnyCancellable>()
@@ -507,16 +543,18 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
         case .captureFullscreen:
             captureFullscreen()
         case .captureScrolling:
-            // Will be implemented in later milestone
-            print("Scrolling capture not yet implemented")
+            startScrollingCapture()
         case .startRecording:
             startRecording()
         case .recordGIF:
             // Will be implemented in later milestone
             print("GIF recording not yet implemented")
         case .textRecognition:
-            // Will be implemented in later milestone
-            print("Text recognition not yet implemented")
+            startOCRCapture()
+        case .selfTimer:
+            startTimedCapture(seconds: settingsManager.settings.selfTimerDefaultDuration)
+        case .screenFreeze:
+            toggleScreenFreeze()
         case .allInOne:
             // Will show all-in-one UI in later milestone
             print("All-in-one mode not yet implemented")
@@ -531,6 +569,434 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
                 self?.settingsManager.save()
             }
             .store(in: &cancellables)
+    }
+
+    // MARK: - Scrolling Capture Methods (T027)
+
+    /// Flag indicating if area selection is for scrolling capture
+    private var isScrollingCaptureAreaSelection = false
+
+    /// Starts scrolling capture mode (T027)
+    func startScrollingCapture() {
+        guard canPerformCapture() else { return }
+        state = .selectingArea
+        isScrollingCaptureAreaSelection = true
+        beginAreaSelection()
+    }
+
+    /// Begins scrolling capture after area selection (T027)
+    private func beginScrollingCapture(region: CGRect, display: SCDisplay) {
+        let config = StitchConfig.from(settings: settingsManager.settings)
+
+        Task {
+            do {
+                try await scrollingCaptureService.startCapture(region: region, display: display, config: config)
+                showScrollingCapturePreview()
+            } catch {
+                handleScrollingCaptureError(error)
+            }
+        }
+    }
+
+    /// Shows the scrolling capture preview window (T027)
+    private func showScrollingCapturePreview() {
+        let window = ScrollingCaptureWindow(
+            captureService: scrollingCaptureService,
+            onFinish: { [weak self] in
+                self?.finishScrollingCapture()
+            },
+            onCancel: { [weak self] in
+                self?.cancelScrollingCapture()
+            }
+        )
+        window.orderFront(nil)
+        scrollingCaptureWindow = window
+    }
+
+    /// Hides the scrolling capture preview window (T027)
+    private func hideScrollingCapturePreview() {
+        scrollingCaptureWindow?.close()
+        scrollingCaptureWindow = nil
+    }
+
+    /// Finishes scrolling capture and creates the final image (T027)
+    private func finishScrollingCapture() {
+        Task {
+            do {
+                let stitchedImage = try await scrollingCaptureService.finishCapture()
+                hideScrollingCapturePreview()
+
+                // Create a capture result from the stitched image
+                guard let display = captureService.availableDisplays.first else {
+                    handleScrollingCaptureError(ScrollingCaptureError.stitchingFailed)
+                    return
+                }
+
+                let result = CaptureResult(
+                    image: stitchedImage,
+                    mode: .display(display),
+                    sourceRect: CGRect(x: 0, y: 0, width: stitchedImage.width, height: stitchedImage.height),
+                    scaleFactor: 2.0
+                )
+
+                handleCaptureResult(result)
+            } catch {
+                handleScrollingCaptureError(error)
+            }
+        }
+    }
+
+    /// Cancels the current scrolling capture (T027)
+    private func cancelScrollingCapture() {
+        scrollingCaptureService.cancelCapture()
+        hideScrollingCapturePreview()
+        state = .idle
+    }
+
+    /// Handles scrolling capture errors (T027)
+    private func handleScrollingCaptureError(_ error: Error) {
+        print("Scrolling capture error: \(error)")
+        hideScrollingCapturePreview()
+
+        if let scrollingError = error as? ScrollingCaptureError {
+            switch scrollingError {
+            case .permissionDenied:
+                permissionManager.openScreenRecordingPreferences()
+            case .maxFramesReached:
+                // This is informational, still complete the capture
+                finishScrollingCapture()
+                return
+            default:
+                showErrorNotification(scrollingError.localizedDescription)
+            }
+        } else {
+            showErrorNotification(error.localizedDescription)
+        }
+
+        state = .idle
+    }
+
+    // MARK: - OCR Capture Methods (T036)
+
+    /// Flag indicating if area selection is for OCR capture
+    private var isOCRCaptureAreaSelection = false
+
+    /// Starts OCR capture mode (T036)
+    func startOCRCapture() {
+        guard canPerformCapture() else { return }
+        state = .selectingArea
+        isOCRCaptureAreaSelection = true
+        beginAreaSelection()
+    }
+
+    /// Performs OCR on a captured image (T036)
+    func performOCR(on image: CGImage) {
+        Task {
+            do {
+                let result = try await textRecognitionService.recognizeText(in: image)
+
+                if result.hasText {
+                    showOCRResult(result, image: image)
+                } else {
+                    showErrorNotification("No text found in the selected region.")
+                    state = .idle
+                }
+            } catch {
+                handleOCRError(error)
+            }
+        }
+    }
+
+    /// Shows the OCR result window (T036)
+    private func showOCRResult(_ result: RecognitionResult, image: CGImage) {
+        let window = OCRResultWindow(
+            result: result,
+            onCopy: { [weak self] in
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(result.fullText, forType: .string)
+
+                // Play sound feedback
+                NSSound(named: "Pop")?.play()
+            },
+            onDismiss: { [weak self] in
+                self?.hideOCRResult()
+            }
+        )
+        window.orderFront(nil)
+        ocrResultWindow = window
+
+        // Also show in Quick Access with the original image
+        if settingsManager.settings.showQuickAccess {
+            guard let display = captureService.availableDisplays.first else { return }
+
+            let captureResult = CaptureResult(
+                image: image,
+                mode: .display(display),
+                sourceRect: CGRect(x: 0, y: 0, width: image.width, height: image.height),
+                scaleFactor: 2.0
+            )
+            quickAccessController.addCapture(captureResult)
+        }
+
+        state = .idle
+    }
+
+    /// Hides the OCR result window (T036)
+    private func hideOCRResult() {
+        ocrResultWindow?.close()
+        ocrResultWindow = nil
+    }
+
+    /// Handles OCR errors (T036)
+    private func handleOCRError(_ error: Error) {
+        print("OCR error: \(error)")
+        hideOCRResult()
+
+        if let ocrError = error as? TextRecognitionError {
+            showErrorNotification(ocrError.localizedDescription)
+        } else {
+            showErrorNotification(error.localizedDescription)
+        }
+
+        state = .idle
+    }
+
+    // MARK: - Screen Freeze Methods (T049)
+
+    /// Toggles screen freeze mode (T049)
+    func toggleScreenFreeze() {
+        Task {
+            do {
+                try await screenFreezeController.toggle()
+            } catch {
+                handleScreenFreezeError(error)
+            }
+        }
+    }
+
+    /// Freezes the current screen (T049)
+    func freezeScreen() {
+        Task {
+            do {
+                try await screenFreezeController.freeze()
+            } catch {
+                handleScreenFreezeError(error)
+            }
+        }
+    }
+
+    /// Unfreezes the screen (T049)
+    func unfreezeScreen() {
+        screenFreezeController.unfreeze()
+    }
+
+    /// Captures from the frozen screen (T049)
+    func captureFromFrozenScreen() {
+        guard screenFreezeController.isFrozen else {
+            captureFullscreen()
+            return
+        }
+
+        state = .capturing
+
+        // Get the frozen image
+        if let displayID = screenFreezeController.state.displayID,
+           let frozenImage = screenFreezeController.getFrozenImage(for: displayID) {
+
+            // Unfreeze screen
+            screenFreezeController.unfreeze()
+
+            // Create capture result
+            Task {
+                guard let display = captureService.availableDisplays.first else {
+                    handleCaptureError(CaptureError.noDisplayFound)
+                    return
+                }
+
+                let result = CaptureResult(
+                    image: frozenImage,
+                    mode: .display(display),
+                    sourceRect: CGRect(x: 0, y: 0, width: frozenImage.width, height: frozenImage.height),
+                    scaleFactor: 2.0
+                )
+
+                handleCaptureResult(result)
+            }
+        } else {
+            state = .idle
+        }
+    }
+
+    /// Handles screen freeze errors (T049)
+    private func handleScreenFreezeError(_ error: Error) {
+        print("Screen freeze error: \(error)")
+
+        if let freezeError = error as? ScreenFreezeError {
+            showErrorNotification(freezeError.localizedDescription)
+        } else {
+            showErrorNotification(error.localizedDescription)
+        }
+    }
+
+    // MARK: - Background Tool Methods (T068)
+
+    /// Opens the background tool for a capture result (T068)
+    func openBackgroundTool(for result: CaptureResult) {
+        let sourceImage = result.nsImage
+
+        let window = BackgroundToolWindow(
+            sourceImage: sourceImage,
+            onExport: { [weak self] exportedImage in
+                self?.handleBackgroundToolExport(exportedImage)
+            },
+            onDismiss: { [weak self] in
+                self?.hideBackgroundTool()
+            }
+        )
+        window.makeKeyAndOrderFront(nil)
+        backgroundToolWindow = window
+    }
+
+    /// Opens the background tool for an existing image (T068)
+    func openBackgroundTool(for image: NSImage) {
+        let window = BackgroundToolWindow(
+            sourceImage: image,
+            onExport: { [weak self] exportedImage in
+                self?.handleBackgroundToolExport(exportedImage)
+            },
+            onDismiss: { [weak self] in
+                self?.hideBackgroundTool()
+            }
+        )
+        window.makeKeyAndOrderFront(nil)
+        backgroundToolWindow = window
+    }
+
+    /// Hides the background tool window (T068)
+    private func hideBackgroundTool() {
+        backgroundToolWindow?.close()
+        backgroundToolWindow = nil
+    }
+
+    /// Handles export from the background tool (T068)
+    private func handleBackgroundToolExport(_ image: NSImage) {
+        hideBackgroundTool()
+
+        // Save the exported image
+        guard let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil),
+              let display = captureService.availableDisplays.first else {
+            return
+        }
+
+        let result = CaptureResult(
+            image: cgImage,
+            mode: .display(display),
+            sourceRect: CGRect(origin: .zero, size: image.size),
+            scaleFactor: 1.0
+        )
+
+        // Save and show notification
+        do {
+            let url = try captureService.save(result)
+            print("Background image saved to: \(url.path)")
+
+            // Show in Quick Access if enabled
+            if settingsManager.settings.showQuickAccess {
+                quickAccessController.addCapture(result)
+            }
+        } catch {
+            showErrorNotification("Failed to save image: \(error.localizedDescription)")
+        }
+    }
+
+    // MARK: - Self-Timer Capture Methods (T044)
+
+    /// The capture mode to use after timer completes
+    private var timedCaptureMode: CaptureMode?
+    private var timedCaptureRect: CGRect?
+
+    /// Starts a timed capture for fullscreen (T044)
+    func startTimedCapture(seconds: Int) {
+        guard canPerformCapture() else { return }
+
+        let config = TimerConfig(seconds: seconds)
+        timedCaptureMode = nil // Will capture fullscreen
+
+        showCountdownWindow()
+
+        selfTimerController.start(config: config) { [weak self] in
+            self?.performTimedFullscreenCapture()
+        } onCancel: { [weak self] in
+            self?.hideCountdownWindow()
+        }
+    }
+
+    /// Starts a timed area capture (T044)
+    func startTimedAreaCapture(seconds: Int, rect: CGRect) {
+        guard canPerformCapture() else { return }
+
+        let config = TimerConfig(seconds: seconds)
+        timedCaptureRect = rect
+
+        showCountdownWindow()
+
+        selfTimerController.start(config: config) { [weak self] in
+            self?.performTimedAreaCapture()
+        } onCancel: { [weak self] in
+            self?.hideCountdownWindow()
+        }
+    }
+
+    /// Cancels the current timed capture (T044)
+    func cancelTimedCapture() {
+        selfTimerController.cancel()
+        hideCountdownWindow()
+        timedCaptureMode = nil
+        timedCaptureRect = nil
+    }
+
+    /// Shows the countdown overlay window (T044)
+    private func showCountdownWindow() {
+        let window = CountdownWindow(controller: selfTimerController) { [weak self] in
+            self?.cancelTimedCapture()
+        }
+        window.show()
+        countdownWindow = window
+    }
+
+    /// Hides the countdown overlay window (T044)
+    private func hideCountdownWindow() {
+        countdownWindow?.hide()
+        countdownWindow = nil
+    }
+
+    /// Performs a timed fullscreen capture (T044)
+    private func performTimedFullscreenCapture() {
+        hideCountdownWindow()
+        state = .capturing
+        performFullscreenCapture()
+    }
+
+    /// Performs a timed area capture (T044)
+    private func performTimedAreaCapture() {
+        guard let rect = timedCaptureRect else {
+            hideCountdownWindow()
+            state = .idle
+            return
+        }
+
+        hideCountdownWindow()
+        state = .capturing
+        timedCaptureRect = nil
+
+        Task {
+            do {
+                let result = try await captureService.captureArea(rect)
+                handleCaptureResult(result)
+            } catch {
+                handleCaptureError(error)
+            }
+        }
     }
 
     // MARK: - Recording Methods (T024, T047)
@@ -909,6 +1375,38 @@ extension AppCoordinator: SelectionWindowDelegate {
         // Dismiss all selection windows
         dismissSelectionWindows()
 
+        // Check if this is for scrolling capture (T027)
+        if isScrollingCaptureAreaSelection {
+            isScrollingCaptureAreaSelection = false
+            state = .capturing
+
+            Task {
+                guard let display = captureService.availableDisplays.first else {
+                    handleScrollingCaptureError(ScrollingCaptureError.invalidRegion)
+                    return
+                }
+
+                beginScrollingCapture(region: rect, display: display)
+            }
+            return
+        }
+
+        // Check if this is for OCR capture (T036)
+        if isOCRCaptureAreaSelection {
+            isOCRCaptureAreaSelection = false
+            state = .capturing
+
+            Task {
+                do {
+                    let result = try await captureService.captureArea(rect)
+                    performOCR(on: result.image)
+                } catch {
+                    handleCaptureError(error)
+                }
+            }
+            return
+        }
+
         // Check if this is for recording or capture (T023, T047)
         if isRecordingAreaSelection {
             isRecordingAreaSelection = false
@@ -952,9 +1450,11 @@ extension AppCoordinator: SelectionWindowDelegate {
         // Dismiss all selection windows
         dismissSelectionWindows()
 
-        // Reset recording flags if applicable
+        // Reset recording, scrolling capture, and OCR flags if applicable
         isRecordingAreaSelection = false
         isGIFRecording = false
+        isScrollingCaptureAreaSelection = false
+        isOCRCaptureAreaSelection = false
 
         // Reset state
         state = .idle

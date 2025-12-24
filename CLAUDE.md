@@ -63,6 +63,8 @@ xcodebuild -scheme ScreenPro -configuration Release archive
 - In-memory during editing, export to FileManager via StorageService, clipboard via NSPasteboard (004-annotation-editor)
 - Swift 5.9+ with strict concurrency checking enabled + ScreenCaptureKit, AVFoundation, ImageIO, AppKit, SwiftUI, Core Graphics (005-screen-recording)
 - FileManager for recordings, UserDefaults for settings (via existing SettingsManager) (005-screen-recording)
+- Swift 5.9+ with strict concurrency checking enabled + ScreenCaptureKit (capture), Vision (OCR, image registration), AVFoundation (camera, recording), Core Graphics (image processing), Core Image (effects), ImageIO (export), SwiftUI + AppKi (006-advanced-features)
+- In-memory during editing; FileManager for export via StorageService (006-advanced-features)
 
 ## Recent Changes
 - 003-quick-access-overlay: Implemented Quick Access overlay feature with floating thumbnail preview, copy/save/annotate/dismiss actions, drag-and-drop to external apps, keyboard navigation, position configuration, and auto-dismiss

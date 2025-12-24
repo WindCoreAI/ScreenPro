@@ -71,6 +71,10 @@ enum QuickAccessPosition: String, Codable, CaseIterable {
     }
 }
 
+// MARK: - Advanced Features Enums (006-advanced-features)
+// Note: BackgroundStyle, OverlayPosition, OverlayShape are defined in their respective model files
+// under Features/Background/Models and Features/Recording/CameraOverlay/Models
+
 /// Type of capture for filename generation
 enum CaptureType {
     case screenshot
@@ -114,6 +118,33 @@ struct Settings: Codable, Equatable {
 
     // MARK: - Shortcuts (stored separately but part of settings)
     var shortcuts: [ShortcutAction: Shortcut] = Shortcut.defaults
+
+    // MARK: - Advanced Features Settings (006-advanced-features)
+
+    // Scrolling Capture (T007)
+    var scrollingCaptureMaxFrames: Int = 50
+    var scrollingCaptureOverlapRatio: Double = 0.2
+
+    // OCR Text Recognition (T008)
+    var ocrLanguages: [String] = ["en-US", "zh-Hans", "zh-Hant", "ja", "ko"]
+    var ocrCopyToClipboardAutomatically: Bool = true
+
+    // Self-Timer (T009)
+    var selfTimerDefaultDuration: Int = 5
+
+    // Magnifier (T010)
+    var magnifierEnabled: Bool = true
+    var magnifierZoomLevel: Int = 8
+
+    // Background Tool (T011)
+    var defaultBackgroundStyle: BackgroundStyle = .gradient
+    var defaultBackgroundPadding: Double = 40.0
+
+    // Camera Overlay (T012)
+    var cameraOverlayEnabled: Bool = false
+    var cameraOverlayPosition: OverlayPosition = .bottomRight
+    var cameraOverlayShape: OverlayShape = .circle
+    var cameraOverlaySize: Double = 150.0
 
     // MARK: - Default Values
 

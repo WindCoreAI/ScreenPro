@@ -13,6 +13,8 @@ enum ShortcutAction: String, Codable, CaseIterable {
     case startRecording
     case recordGIF
     case textRecognition
+    case selfTimer
+    case screenFreeze
     case allInOne
 
     var displayName: String {
@@ -24,6 +26,8 @@ enum ShortcutAction: String, Codable, CaseIterable {
         case .startRecording: return "Start Recording"
         case .recordGIF: return "Record GIF"
         case .textRecognition: return "Text Recognition (OCR)"
+        case .selfTimer: return "Self-Timer Capture"
+        case .screenFreeze: return "Screen Freeze"
         case .allInOne: return "All-in-One"
         }
     }
@@ -72,6 +76,10 @@ struct Shortcut: Codable, Hashable {
             .captureFullscreen: Shortcut(keyCode: 0x14, modifiers: UInt32(cmdKey | shiftKey)),  // ⌘⇧3
             .allInOne: Shortcut(keyCode: 0x17, modifiers: UInt32(cmdKey | shiftKey)),           // ⌘⇧5
             .startRecording: Shortcut(keyCode: 0x16, modifiers: UInt32(cmdKey | shiftKey)),     // ⌘⇧6
+            .captureScrolling: Shortcut(keyCode: 0x1A, modifiers: UInt32(cmdKey | shiftKey)),   // ⌘⇧7
+            .textRecognition: Shortcut(keyCode: 0x1C, modifiers: UInt32(cmdKey | shiftKey)),    // ⌘⇧8
+            .selfTimer: Shortcut(keyCode: 0x19, modifiers: UInt32(cmdKey | shiftKey)),          // ⌘⇧9
+            .screenFreeze: Shortcut(keyCode: 0x1D, modifiers: UInt32(cmdKey | shiftKey)),       // ⌘⇧0
         ]
     }
 

@@ -32,8 +32,14 @@ struct SettingsView: View {
                     Label("Shortcuts", systemImage: "keyboard")
                 }
                 .tag(3)
+
+            AdvancedFeaturesSettingsTab()
+                .tabItem {
+                    Label("Advanced", systemImage: "sparkles")
+                }
+                .tag(4)
         }
-        .frame(width: 500, height: 400)
+        .frame(width: 500, height: 500)
     }
 }
 
