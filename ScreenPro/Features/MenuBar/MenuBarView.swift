@@ -42,22 +42,70 @@ struct MenuBarView: View {
 
         Divider()
 
-        // Recording Section (T016)
+        // Recording Section (T013, T016, T047)
         Section("Record") {
-            Button("Record Screen") {
+            Button("Record Fullscreen") {
                 coordinator.startRecording()
             }
             .keyboardShortcut("6", modifiers: [.command, .shift])
-            .disabled(!isReady)
-            .accessibilityLabel("Record Screen")
-            .accessibilityHint("Start recording the screen as video")
+            .disabled(!isReady || isRecording)
+            .accessibilityLabel("Record Fullscreen")
+            .accessibilityHint("Start recording the entire screen as video")
 
-            Button("Record GIF") {
-                // Will be implemented in later milestone
+            Button("Record Window...") {
+                coordinator.startRecordingWindow()
             }
-            .disabled(true)
+            .disabled(!isReady || isRecording)
+            .accessibilityLabel("Record Window")
+            .accessibilityHint("Select and record a specific window")
+
+            Button("Record Area...") {
+                coordinator.startRecordingArea()
+            }
+            .disabled(!isReady || isRecording)
+            .accessibilityLabel("Record Area")
+            .accessibilityHint("Select a rectangular area to record")
+
+            Divider()
+
+            // GIF Recording Menu (T047)
+            Menu("Record GIF") {
+                Button("GIF Fullscreen") {
+                    coordinator.startGIFRecording()
+                }
+                .disabled(!isReady || isRecording)
+                .accessibilityLabel("Record GIF Fullscreen")
+                .accessibilityHint("Start recording the entire screen as animated GIF")
+
+                Button("GIF Window...") {
+                    coordinator.startGIFRecordingWindow()
+                }
+                .disabled(!isReady || isRecording)
+                .accessibilityLabel("Record GIF Window")
+                .accessibilityHint("Select and record a window as animated GIF")
+
+                Button("GIF Area...") {
+                    coordinator.startGIFRecordingArea()
+                }
+                .disabled(!isReady || isRecording)
+                .accessibilityLabel("Record GIF Area")
+                .accessibilityHint("Select an area to record as animated GIF")
+            }
+            .disabled(!isReady || isRecording)
             .accessibilityLabel("Record GIF")
-            .accessibilityHint("Record screen as animated GIF, not yet available")
+            .accessibilityHint("Record screen as animated GIF")
+
+            // Show stop recording option if currently recording
+            if isRecording {
+                Divider()
+
+                Button("Stop Recording") {
+                    coordinator.stopRecording()
+                }
+                .keyboardShortcut("6", modifiers: [.command, .shift])
+                .accessibilityLabel("Stop Recording")
+                .accessibilityHint("Stop the current recording and save")
+            }
         }
 
         Divider()
@@ -105,6 +153,10 @@ struct MenuBarView: View {
 
     private var isReady: Bool {
         coordinator.isReady && coordinator.permissionManager.screenRecordingStatus == .authorized
+    }
+
+    private var isRecording: Bool {
+        coordinator.state == .recording
     }
 }
 

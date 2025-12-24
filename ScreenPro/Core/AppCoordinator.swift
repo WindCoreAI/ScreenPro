@@ -3,6 +3,7 @@ import SwiftUI
 import Combine
 import ScreenCaptureKit
 import UserNotifications
+import AVFoundation
 
 // MARK: - AppCoordinator State (T010)
 
@@ -84,6 +85,18 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
             coordinator: self
         )
     }()
+
+    /// The recording service for screen recording (T012)
+    private(set) lazy var recordingService: RecordingService = {
+        RecordingService(
+            storageService: storageService,
+            settingsManager: settingsManager,
+            permissionManager: permissionManager
+        )
+    }()
+
+    /// The recording controls window (T037)
+    private var recordingControlsWindow: RecordingControlsWindow?
 
     /// The annotation editor window controller (T017)
     /// Note: Uses NSWindowController type to avoid compile-time dependency on Annotation module.
@@ -170,11 +183,72 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
     func startRecording() {
         guard canPerformCapture() else { return }
         state = .recording
-        // Actual recording will be implemented in a later milestone
-        print("Recording started (placeholder)")
-        // Reset to idle for now
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            self?.state = .idle
+        beginFullscreenRecording()
+    }
+
+    /// Starts screen recording for a specific region (T024)
+    func startRecording(region: RecordingRegion, format: RecordingFormat? = nil) {
+        guard canPerformCapture() else { return }
+        state = .recording
+        performRecording(region: region, format: format)
+    }
+
+    /// Starts recording a specific window (T013, T023)
+    func startRecordingWindow() {
+        guard canPerformCapture() else { return }
+        beginWindowRecordingSelection()
+    }
+
+    /// Starts recording a selected area (T013, T023)
+    func startRecordingArea() {
+        guard canPerformCapture() else { return }
+        state = .selectingArea
+        beginAreaRecordingSelection()
+    }
+
+    /// Stops the current recording (T024)
+    func stopRecording() {
+        guard state == .recording else { return }
+        Task {
+            do {
+                let result = try await recordingService.stopRecording()
+                handleRecordingResult(result)
+            } catch {
+                handleRecordingError(error)
+            }
+        }
+    }
+
+    /// Pauses the current recording
+    func pauseRecording() {
+        guard state == .recording else { return }
+        do {
+            try recordingService.pauseRecording()
+        } catch {
+            handleRecordingError(error)
+        }
+    }
+
+    /// Resumes a paused recording
+    func resumeRecording() {
+        guard recordingService.state == .paused else { return }
+        do {
+            try recordingService.resumeRecording()
+        } catch {
+            handleRecordingError(error)
+        }
+    }
+
+    /// Cancels the current recording
+    func cancelRecording() {
+        Task {
+            do {
+                try await recordingService.cancelRecording()
+                hideRecordingControls()
+                state = .idle
+            } catch {
+                handleRecordingError(error)
+            }
         }
     }
 
@@ -458,6 +532,374 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
             }
             .store(in: &cancellables)
     }
+
+    // MARK: - Recording Methods (T024, T047)
+
+    /// Recording mode flag - determines if area selection is for capture or recording
+    private var isRecordingAreaSelection = false
+    private var isRecordingWindowSelection = false
+
+    /// GIF recording mode flag (T047)
+    private var isGIFRecording = false
+
+    /// Begins window selection for recording (T023)
+    private func beginWindowRecordingSelection() {
+        isRecordingWindowSelection = true
+        state = .selectingWindow
+        Task {
+            do {
+                try await captureService.refreshAvailableContent()
+            } catch {
+                handleRecordingError(error)
+                isRecordingWindowSelection = false
+                return
+            }
+
+            let windows = captureService.availableWindows
+
+            guard !windows.isEmpty else {
+                handleRecordingError(RecordingError.streamConfigurationFailed)
+                isRecordingWindowSelection = false
+                return
+            }
+
+            let picker = WindowPickerController()
+            windowPickerController = picker
+
+            let selectedWindow = await picker.pickWindow(from: windows)
+            windowPickerController = nil
+            isRecordingWindowSelection = false
+
+            if let window = selectedWindow {
+                state = .recording
+                let region = RecordingRegion.window(window)
+                performRecording(region: region, format: nil)
+            } else {
+                state = .idle
+            }
+        }
+    }
+
+    /// Begins area selection for recording (T023)
+    private func beginAreaRecordingSelection() {
+        isRecordingAreaSelection = true
+        Task {
+            do {
+                try await captureService.refreshAvailableContent()
+            } catch {
+                handleCaptureError(error)
+                isRecordingAreaSelection = false
+                return
+            }
+
+            // Create selection window for each screen
+            for screen in NSScreen.screens {
+                let window = SelectionWindow(screen: screen)
+                window.selectionDelegate = self
+                window.showForSelection()
+                selectionWindows.append(window)
+            }
+        }
+    }
+
+    /// Begins fullscreen recording on the main display
+    private func beginFullscreenRecording() {
+        Task {
+            do {
+                try await captureService.refreshAvailableContent()
+                guard let display = captureService.availableDisplays.first else {
+                    handleRecordingError(RecordingError.streamConfigurationFailed)
+                    return
+                }
+
+                let region = RecordingRegion.display(display)
+                let format = createDefaultVideoFormat()
+
+                try await recordingService.startRecording(region: region, format: format)
+                showRecordingControls()
+            } catch {
+                handleRecordingError(error)
+            }
+        }
+    }
+
+    /// Performs recording with a specific region (T024)
+    private func performRecording(region: RecordingRegion, format: RecordingFormat?) {
+        Task {
+            do {
+                let recordingFormat = format ?? createDefaultVideoFormat()
+                try await recordingService.startRecording(region: region, format: recordingFormat)
+                showRecordingControls()
+            } catch {
+                handleRecordingError(error)
+            }
+        }
+    }
+
+    /// Creates the default video format from settings
+    private func createDefaultVideoFormat() -> RecordingFormat {
+        let settings = settingsManager.settings
+
+        // Map VideoQuality to VideoConfig.Resolution
+        let resolution: VideoConfig.Resolution
+        switch settings.videoQuality {
+        case .low:     resolution = .r480p
+        case .medium:  resolution = .r720p
+        case .high:    resolution = .r1080p
+        case .maximum: resolution = .r4k
+        }
+
+        // Map VideoQuality to VideoConfig.Quality
+        let quality: VideoConfig.Quality
+        switch settings.videoQuality {
+        case .low:     quality = .low
+        case .medium:  quality = .medium
+        case .high:    quality = .high
+        case .maximum: quality = .maximum
+        }
+
+        let config = VideoConfig(
+            resolution: resolution,
+            frameRate: settings.videoFPS,
+            quality: quality,
+            includeSystemAudio: settings.recordSystemAudio,
+            includeMicrophone: settings.recordMicrophone,
+            showClicks: settings.showClicks,
+            showKeystrokes: settings.showKeystrokes,
+            showCursor: settings.includeCursor
+        )
+
+        return .video(config)
+    }
+
+    /// Creates the default GIF format (T047)
+    private func createDefaultGIFFormat() -> RecordingFormat {
+        let config = GIFConfig(
+            frameRate: 15,
+            maxColors: 256,
+            loopCount: 0,
+            scale: 1.0
+        )
+        return .gif(config)
+    }
+
+    // MARK: - GIF Recording Methods (T047)
+
+    /// Starts GIF recording fullscreen
+    func startGIFRecording() {
+        guard canPerformCapture() else { return }
+        state = .recording
+        isGIFRecording = true
+        beginFullscreenGIFRecording()
+    }
+
+    /// Starts GIF recording for a window
+    func startGIFRecordingWindow() {
+        guard canPerformCapture() else { return }
+        isGIFRecording = true
+        beginWindowGIFRecordingSelection()
+    }
+
+    /// Starts GIF recording for a selected area
+    func startGIFRecordingArea() {
+        guard canPerformCapture() else { return }
+        state = .selectingArea
+        isGIFRecording = true
+        isRecordingAreaSelection = true
+        beginAreaRecordingSelection()
+    }
+
+    /// Begins fullscreen GIF recording on the main display
+    private func beginFullscreenGIFRecording() {
+        Task {
+            do {
+                try await captureService.refreshAvailableContent()
+                guard let display = captureService.availableDisplays.first else {
+                    handleRecordingError(RecordingError.streamConfigurationFailed)
+                    return
+                }
+
+                let region = RecordingRegion.display(display)
+                let format = createDefaultGIFFormat()
+
+                try await recordingService.startRecording(region: region, format: format)
+                showRecordingControls()
+            } catch {
+                handleRecordingError(error)
+            }
+        }
+    }
+
+    /// Begins window selection for GIF recording
+    private func beginWindowGIFRecordingSelection() {
+        isRecordingWindowSelection = true
+        state = .selectingWindow
+        Task {
+            do {
+                try await captureService.refreshAvailableContent()
+            } catch {
+                handleRecordingError(error)
+                isRecordingWindowSelection = false
+                isGIFRecording = false
+                return
+            }
+
+            let windows = captureService.availableWindows
+
+            guard !windows.isEmpty else {
+                handleRecordingError(RecordingError.streamConfigurationFailed)
+                isRecordingWindowSelection = false
+                isGIFRecording = false
+                return
+            }
+
+            let picker = WindowPickerController()
+            windowPickerController = picker
+
+            let selectedWindow = await picker.pickWindow(from: windows)
+            windowPickerController = nil
+            isRecordingWindowSelection = false
+
+            if let window = selectedWindow {
+                state = .recording
+                let region = RecordingRegion.window(window)
+                let format = createDefaultGIFFormat()
+                performRecording(region: region, format: format)
+            } else {
+                isGIFRecording = false
+                state = .idle
+            }
+        }
+    }
+
+    /// Handles a successful recording result (T087)
+    private func handleRecordingResult(_ result: RecordingResult) {
+        hideRecordingControls()
+        isGIFRecording = false
+
+        // Show in Quick Access if enabled
+        if settingsManager.settings.showQuickAccess {
+            // Generate thumbnail from recording and show in Quick Access
+            Task {
+                if let thumbnail = await generateThumbnailFromRecording(result),
+                   let display = captureService.availableDisplays.first {
+                    let captureResult = CaptureResult(
+                        id: result.id,
+                        image: thumbnail,
+                        mode: .display(display), // Recording mode - used for display purposes
+                        timestamp: result.timestamp,
+                        sourceRect: .zero,
+                        scaleFactor: 1.0
+                    )
+                    quickAccessController.addCapture(captureResult)
+                } else {
+                    // Fallback to notification if thumbnail generation fails
+                    showRecordingNotification(for: result)
+                }
+            }
+        } else {
+            showRecordingNotification(for: result)
+        }
+
+        state = .idle
+    }
+
+    /// Generates a thumbnail from a recording file (T087)
+    private func generateThumbnailFromRecording(_ result: RecordingResult) async -> CGImage? {
+        let asset = AVAsset(url: result.url)
+
+        // For GIF files, try to load the first frame directly
+        if result.url.pathExtension.lowercased() == "gif" {
+            return loadGIFFirstFrame(from: result.url)
+        }
+
+        // For video files, use AVAssetImageGenerator
+        let imageGenerator = AVAssetImageGenerator(asset: asset)
+        imageGenerator.appliesPreferredTrackTransform = true
+        imageGenerator.maximumSize = CGSize(width: 320, height: 240)
+
+        do {
+            let cgImage = try imageGenerator.copyCGImage(at: .zero, actualTime: nil)
+            return cgImage
+        } catch {
+            print("Failed to generate recording thumbnail: \(error)")
+            return nil
+        }
+    }
+
+    /// Loads the first frame from a GIF file
+    private func loadGIFFirstFrame(from url: URL) -> CGImage? {
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else { return nil }
+        return CGImageSourceCreateImageAtIndex(source, 0, nil)
+    }
+
+    /// Handles a recording error
+    private func handleRecordingError(_ error: Error) {
+        print("Recording error: \(error)")
+        hideRecordingControls()
+
+        if let recordingError = error as? RecordingError {
+            switch recordingError {
+            case .screenCaptureNotAuthorized:
+                permissionManager.openScreenRecordingPreferences()
+            case .microphoneNotAuthorized:
+                permissionManager.openMicrophonePreferences()
+            default:
+                showErrorNotification(recordingError.localizedDescription)
+            }
+        } else {
+            showErrorNotification(error.localizedDescription)
+        }
+
+        state = .idle
+    }
+
+    /// Shows a notification for a completed recording
+    private func showRecordingNotification(for result: RecordingResult) {
+        guard settingsManager.settings.showNotifications else { return }
+
+        let content = UNMutableNotificationContent()
+        content.title = "Recording Saved"
+        content.body = "Recording saved: \(result.formattedDuration)"
+        content.sound = nil
+
+        let request = UNNotificationRequest(
+            identifier: result.id.uuidString,
+            content: content,
+            trigger: nil
+        )
+
+        UNUserNotificationCenter.current().add(request)
+    }
+
+    // MARK: - Recording Controls Window (T037)
+
+    /// Shows the recording controls window
+    private func showRecordingControls() {
+        let controlsWindow = RecordingControlsWindow(
+            recordingService: recordingService,
+            onStop: { [weak self] in
+                self?.stopRecording()
+            },
+            onPause: { [weak self] in
+                self?.pauseRecording()
+            },
+            onResume: { [weak self] in
+                self?.resumeRecording()
+            },
+            onCancel: { [weak self] in
+                self?.cancelRecording()
+            }
+        )
+        controlsWindow.orderFront(nil)
+        recordingControlsWindow = controlsWindow
+    }
+
+    /// Hides the recording controls window
+    private func hideRecordingControls() {
+        recordingControlsWindow?.close()
+        recordingControlsWindow = nil
+    }
 }
 
 // MARK: - SelectionWindowDelegate
@@ -467,16 +909,41 @@ extension AppCoordinator: SelectionWindowDelegate {
         // Dismiss all selection windows
         dismissSelectionWindows()
 
-        // Transition to capturing state
-        state = .capturing
+        // Check if this is for recording or capture (T023, T047)
+        if isRecordingAreaSelection {
+            isRecordingAreaSelection = false
+            state = .recording
 
-        // Perform the capture
-        Task {
-            do {
-                let result = try await captureService.captureArea(rect)
-                handleCaptureResult(result)
-            } catch {
-                handleCaptureError(error)
+            // Get the display for the selection window's screen
+            Task {
+                guard let display = captureService.availableDisplays.first else {
+                    handleRecordingError(RecordingError.streamConfigurationFailed)
+                    return
+                }
+
+                let region = RecordingRegion.area(rect, display)
+
+                // Use GIF format if in GIF recording mode (T047)
+                if isGIFRecording {
+                    isGIFRecording = false
+                    let format = createDefaultGIFFormat()
+                    performRecording(region: region, format: format)
+                } else {
+                    performRecording(region: region, format: nil)
+                }
+            }
+        } else {
+            // Transition to capturing state
+            state = .capturing
+
+            // Perform the capture
+            Task {
+                do {
+                    let result = try await captureService.captureArea(rect)
+                    handleCaptureResult(result)
+                } catch {
+                    handleCaptureError(error)
+                }
             }
         }
     }
@@ -484,6 +951,10 @@ extension AppCoordinator: SelectionWindowDelegate {
     func selectionWindowDidCancel(_ window: SelectionWindow) {
         // Dismiss all selection windows
         dismissSelectionWindows()
+
+        // Reset recording flags if applicable
+        isRecordingAreaSelection = false
+        isGIFRecording = false
 
         // Reset state
         state = .idle

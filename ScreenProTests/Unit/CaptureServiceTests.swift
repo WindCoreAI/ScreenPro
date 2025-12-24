@@ -1,4 +1,5 @@
 import XCTest
+import ScreenCaptureKit
 @testable import ScreenPro
 
 /// Unit tests for CaptureService.
