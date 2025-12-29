@@ -167,22 +167,40 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
 
     /// Initializes all services and checks permissions
     func initialize() async {
+        print("[AppCoordinator] Initializing...")
+
         // Check initial permissions
         permissionManager.checkInitialPermissions()
 
         // Wait for screen recording permission check
         let hasScreenPermission = await permissionManager.checkScreenRecordingPermission()
+        print("[AppCoordinator] Screen permission check result: \(hasScreenPermission)")
 
         if !hasScreenPermission {
             state = .requestingPermission
+            print("[AppCoordinator] State set to: requestingPermission")
         } else {
             state = .idle
+            print("[AppCoordinator] State set to: idle")
         }
 
         // Register shortcuts
         shortcutManager.registerAll()
 
         isReady = true
+        print("[AppCoordinator] Initialization complete. isReady=\(isReady), state=\(state)")
+    }
+
+    /// Re-checks permissions (call after user grants permission in System Preferences)
+    func recheckPermissions() async {
+        print("[AppCoordinator] Re-checking permissions...")
+        let hasScreenPermission = await permissionManager.checkScreenRecordingPermission()
+        print("[AppCoordinator] Re-check result: \(hasScreenPermission), status: \(permissionManager.screenRecordingStatus)")
+
+        if hasScreenPermission && state == .requestingPermission {
+            state = .idle
+            print("[AppCoordinator] State updated to: idle")
+        }
     }
 
     /// Cleans up resources before app termination
@@ -509,14 +527,21 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
     // MARK: - Private Methods
 
     private func canPerformCapture() -> Bool {
+        // If we're in requestingPermission state but now have permission, transition to idle
+        if state == .requestingPermission && permissionManager.screenRecordingStatus == .authorized {
+            print("[AppCoordinator] Permission now authorized, transitioning from requestingPermission to idle")
+            state = .idle
+        }
+
         // Check if we're in a valid state for capture
         guard state.isIdle else {
-            print("Cannot capture: app is busy (state: \(state))")
+            print("[AppCoordinator] Cannot capture: app is busy (state: \(state))")
             return false
         }
 
         // Check screen recording permission
         guard permissionManager.screenRecordingStatus == .authorized else {
+            print("[AppCoordinator] Cannot capture: permission not authorized (\(permissionManager.screenRecordingStatus))")
             state = .requestingPermission
             permissionManager.openScreenRecordingPreferences()
             return false

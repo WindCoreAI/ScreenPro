@@ -82,6 +82,8 @@ final class RecordingService: NSObject, ObservableObject, RecordingServiceProtoc
     private var outputURL: URL?
     private var recordingFormat: RecordingFormat?
     private var recordingStartTime: Date?
+    private var videoFrameCount: Int = 0
+    private var audioSampleCount: Int = 0
 
     // MARK: - Timer
 
@@ -112,19 +114,30 @@ final class RecordingService: NSObject, ObservableObject, RecordingServiceProtoc
 
     /// Starts recording the specified region with the given format (T019)
     func startRecording(region: RecordingRegion, format: RecordingFormat) async throws {
+        print("[RecordingService] startRecording called")
+        print("[RecordingService]   Region: \(region)")
+        print("[RecordingService]   Format: \(format)")
+        print("[RecordingService]   Current state: \(state)")
+
         guard state == .idle else {
+            print("[RecordingService] ERROR: Already recording (state: \(state))")
             throw RecordingError.alreadyRecording
         }
 
         // Check screen recording permission
+        print("[RecordingService] Checking screen recording permission...")
+        print("[RecordingService]   Permission status: \(permissionManager.screenRecordingStatus)")
         guard permissionManager.screenRecordingStatus == .authorized else {
+            print("[RecordingService] ERROR: Screen capture not authorized")
             throw RecordingError.screenCaptureNotAuthorized
         }
 
         // Check microphone permission if needed
         if case .video(let config) = format, config.includeMicrophone {
             let micStatus = permissionManager.checkMicrophonePermission()
+            print("[RecordingService] Microphone permission: \(micStatus)")
             guard micStatus == .authorized else {
+                print("[RecordingService] ERROR: Microphone not authorized")
                 throw RecordingError.microphoneNotAuthorized
             }
         }
@@ -132,8 +145,10 @@ final class RecordingService: NSObject, ObservableObject, RecordingServiceProtoc
         // Check disk space before recording (T084)
         let saveLocation = settingsManager.settings.defaultSaveLocation
         guard hasSufficientDiskSpace(at: saveLocation) else {
+            print("[RecordingService] ERROR: Insufficient disk space at \(saveLocation.path)")
             throw RecordingError.insufficientDiskSpace
         }
+        print("[RecordingService] Disk space check passed")
 
         state = .starting
         recordingRegion = region
@@ -145,15 +160,19 @@ final class RecordingService: NSObject, ObservableObject, RecordingServiceProtoc
             outputURL = storageService.uniqueURL(for: filename, in: settingsManager.settings.defaultSaveLocation)
 
             guard let outputURL = outputURL else {
+                print("[RecordingService] ERROR: Cannot create output file")
                 throw RecordingError.cannotCreateFile(settingsManager.settings.defaultSaveLocation)
             }
+            print("[RecordingService] Output URL: \(outputURL.path)")
 
             // Ensure directory exists
             try storageService.ensureDirectoryExists(at: settingsManager.settings.defaultSaveLocation)
+            print("[RecordingService] Directory exists/created")
 
             // Setup based on format (T044)
             if case .gif(let config) = format {
                 // GIF recording: store config and prepare frame buffer
+                print("[RecordingService] Setting up GIF recording")
                 gifConfig = config
                 gifSourceFPS = config.frameRate
                 gifFrames = []
@@ -161,25 +180,34 @@ final class RecordingService: NSObject, ObservableObject, RecordingServiceProtoc
                 isGIFMemoryWarningShown = false
             } else {
                 // Video recording: setup asset writer
+                print("[RecordingService] Setting up asset writer for video")
                 try setupAssetWriter(at: outputURL, format: format)
+                print("[RecordingService] Asset writer setup complete")
             }
 
             // Setup and start stream
+            print("[RecordingService] Setting up SCStream...")
             try await setupStream(for: region, format: format)
+            print("[RecordingService] SCStream setup complete, starting capture...")
             try await stream?.startCapture()
+            print("[RecordingService] SCStream capture started successfully!")
 
             // Start microphone capture if enabled (T057)
             if case .video(let config) = format, config.includeMicrophone {
+                print("[RecordingService] Setting up microphone capture...")
                 try setupMicrophoneCapture()
+                print("[RecordingService] Microphone capture started")
             }
 
             // Start click visualization if enabled (T072)
             if case .video(let config) = format, config.showClicks {
+                print("[RecordingService] Starting click visualization")
                 startClickVisualization()
             }
 
             // Start keystroke visualization if enabled (T081)
             if case .video(let config) = format, config.showKeystrokes {
+                print("[RecordingService] Starting keystroke visualization")
                 startKeystrokeVisualization()
             }
 
@@ -187,8 +215,14 @@ final class RecordingService: NSObject, ObservableObject, RecordingServiceProtoc
             state = .recording
             recordingStartTime = Date()
             startDurationTimer()
+            print("[RecordingService] Recording started successfully at \(recordingStartTime!)")
 
         } catch {
+            print("[RecordingService] ERROR during setup: \(error)")
+            print("[RecordingService]   Error type: \(type(of: error))")
+            if let nsError = error as NSError? {
+                print("[RecordingService]   NSError domain: \(nsError.domain), code: \(nsError.code)")
+            }
             await cleanup()
             state = .idle
             throw error
@@ -372,18 +406,26 @@ final class RecordingService: NSObject, ObservableObject, RecordingServiceProtoc
 
     /// Sets up the SCStream for capture
     private func setupStream(for region: RecordingRegion, format: RecordingFormat) async throws {
+        print("[RecordingService] setupStream - Creating configuration...")
         let configuration = createStreamConfiguration(for: format, region: region)
+        print("[RecordingService] setupStream - Configuration: width=\(configuration.width), height=\(configuration.height)")
+
+        print("[RecordingService] setupStream - Creating content filter...")
         let filter = try createContentFilter(for: region)
+        print("[RecordingService] setupStream - Content filter created")
 
         // Handle area capture by setting crop rect
         if case .area(let rect, _) = region {
+            print("[RecordingService] setupStream - Setting area crop rect: \(rect)")
             configuration.sourceRect = rect
             configuration.width = Int(rect.width)
             configuration.height = Int(rect.height)
         }
 
+        print("[RecordingService] setupStream - Creating SCStream...")
         let stream = SCStream(filter: filter, configuration: configuration, delegate: self)
         self.stream = stream
+        print("[RecordingService] setupStream - SCStream created")
 
         // Create and add stream output
         let output = RecordingStreamOutput(
@@ -396,11 +438,15 @@ final class RecordingService: NSObject, ObservableObject, RecordingServiceProtoc
         )
         self.streamOutput = output
 
+        print("[RecordingService] setupStream - Adding screen output...")
         try stream.addStreamOutput(output, type: .screen, sampleHandlerQueue: .global(qos: .userInteractive))
+        print("[RecordingService] setupStream - Screen output added")
 
         // Add audio output if capturing audio
         if case .video(let config) = format, config.includeSystemAudio {
+            print("[RecordingService] setupStream - Adding audio output...")
             try stream.addStreamOutput(output, type: .audio, sampleHandlerQueue: .global(qos: .userInteractive))
+            print("[RecordingService] setupStream - Audio output added")
         }
     }
 
@@ -581,6 +627,13 @@ final class RecordingService: NSObject, ObservableObject, RecordingServiceProtoc
     private func handleVideoSample(_ sampleBuffer: CMSampleBuffer) {
         guard state == .recording else { return }
 
+        videoFrameCount += 1
+        if videoFrameCount == 1 {
+            print("[RecordingService] First video frame received!")
+        } else if videoFrameCount % 30 == 0 {
+            print("[RecordingService] Video frames received: \(videoFrameCount)")
+        }
+
         // Handle GIF frame capture (T045)
         if gifConfig != nil {
             handleGIFSample(sampleBuffer)
@@ -590,16 +643,26 @@ final class RecordingService: NSObject, ObservableObject, RecordingServiceProtoc
         // Handle video frame capture
         guard let assetWriter = assetWriter,
               let videoInput = videoInput,
-              videoInput.isReadyForMoreMediaData else { return }
+              videoInput.isReadyForMoreMediaData else {
+            if videoFrameCount == 1 {
+                print("[RecordingService] WARNING: Asset writer or video input not ready for first frame")
+                print("[RecordingService]   assetWriter: \(assetWriter != nil ? "exists" : "nil")")
+                print("[RecordingService]   videoInput: \(videoInput != nil ? "exists" : "nil")")
+                print("[RecordingService]   isReadyForMoreMediaData: \(videoInput?.isReadyForMoreMediaData ?? false)")
+            }
+            return
+        }
 
         let presentationTime = CMSampleBufferGetPresentationTimeStamp(sampleBuffer)
 
         // Start session at first frame (T021)
         if !hasStartedSession {
+            print("[RecordingService] Starting asset writer session at time: \(presentationTime.seconds)")
             assetWriter.startWriting()
             assetWriter.startSession(atSourceTime: presentationTime)
             sessionStartTime = presentationTime
             hasStartedSession = true
+            print("[RecordingService] Asset writer session started, status: \(assetWriter.status.rawValue)")
         }
 
         // Adjust timestamp for any pause offset
@@ -737,6 +800,8 @@ final class RecordingService: NSObject, ObservableObject, RecordingServiceProtoc
 
     /// Cleans up all recording resources
     private func cleanup() async {
+        print("[RecordingService] Cleanup - Total video frames: \(videoFrameCount), audio samples: \(audioSampleCount)")
+
         stopDurationTimer()
         stopMicrophoneCapture()
         stopClickVisualization()
@@ -759,6 +824,8 @@ final class RecordingService: NSObject, ObservableObject, RecordingServiceProtoc
         sessionStartTime = nil
         hasStartedSession = false
         isMicrophoneEnabled = false
+        videoFrameCount = 0
+        audioSampleCount = 0
 
         // Clear GIF state (T044)
         gifFrames = []

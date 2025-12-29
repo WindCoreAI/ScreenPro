@@ -189,7 +189,15 @@ struct MenuBarView: View {
     // MARK: - Computed Properties
 
     private var isReady: Bool {
-        coordinator.isReady && coordinator.permissionManager.screenRecordingStatus == .authorized
+        // Check if coordinator is ready and has screen recording permission
+        // Also allow if in requestingPermission state but permission is now authorized
+        let hasPermission = coordinator.permissionManager.screenRecordingStatus == .authorized
+        let stateAllowsCapture = coordinator.state.isIdle ||
+            (coordinator.state == .requestingPermission && hasPermission)
+        let ready = coordinator.isReady && hasPermission && stateAllowsCapture
+        // Debug logging
+        print("[MenuBarView] isReady: \(ready) (coordinator.isReady: \(coordinator.isReady), hasPermission: \(hasPermission), state: \(coordinator.state))")
+        return ready
     }
 
     private var isRecording: Bool {

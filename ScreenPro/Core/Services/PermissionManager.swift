@@ -49,17 +49,25 @@ final class PermissionManager: ObservableObject, PermissionManagerProtocol {
 
     /// Checks screen recording permission by attempting to access shareable content
     func checkScreenRecordingPermission() async -> Bool {
+        print("[PermissionManager] Checking screen recording permission...")
         do {
             // Attempt to get shareable content - this triggers permission check
-            _ = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: false)
+            let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: false)
+            print("[PermissionManager] Screen recording permission AUTHORIZED")
+            print("[PermissionManager] Available displays: \(content.displays.count), windows: \(content.windows.count)")
             screenRecordingStatus = .authorized
             return true
         } catch {
             // Check error type to determine status
             let nsError = error as NSError
+            print("[PermissionManager] Screen recording permission check failed:")
+            print("[PermissionManager]   Error: \(error.localizedDescription)")
+            print("[PermissionManager]   NSError domain: \(nsError.domain), code: \(nsError.code)")
             if nsError.code == -3801 { // User declined
+                print("[PermissionManager]   Status: DENIED (user declined)")
                 screenRecordingStatus = .denied
             } else {
+                print("[PermissionManager]   Status: NOT_DETERMINED (error code: \(nsError.code))")
                 screenRecordingStatus = .notDetermined
             }
             return false

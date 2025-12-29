@@ -20,7 +20,8 @@ struct ScreenProApp: App {
             MenuBarView()
                 .environmentObject(coordinator)
         } label: {
-            Label("ScreenPro", systemImage: "camera.viewfinder")
+            // Use a custom view for the label that triggers initialization
+            MenuBarLabel(coordinator: coordinator)
         }
         .menuBarExtraStyle(.menu)
 
@@ -31,5 +32,24 @@ struct ScreenProApp: App {
                 .environmentObject(coordinator.settingsManager)
                 .environmentObject(coordinator.permissionManager)
         }
+    }
+}
+
+// MARK: - Menu Bar Label
+
+/// Custom label view that triggers coordinator initialization when it appears
+private struct MenuBarLabel: View {
+    @ObservedObject var coordinator: AppCoordinator
+
+    var body: some View {
+        Label("ScreenPro", systemImage: "camera.viewfinder")
+            .task {
+                // Initialize coordinator when menu bar icon appears
+                if !coordinator.isReady {
+                    print("[ScreenProApp] Initializing coordinator from menu bar label...")
+                    await coordinator.initialize()
+                    print("[ScreenProApp] Coordinator initialized: isReady=\(coordinator.isReady), permission=\(coordinator.permissionManager.screenRecordingStatus)")
+                }
+            }
     }
 }
