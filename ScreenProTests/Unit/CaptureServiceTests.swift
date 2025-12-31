@@ -127,9 +127,10 @@ final class CaptureServiceTests: XCTestCase {
         }
 
         // When: Creating a CaptureResult with 2x scale factor
+        // Use .area mode instead of .display to avoid needing to mock SCDisplay
         let result = CaptureResult(
             image: cgImage,
-            mode: .display(MockSCDisplay()),
+            mode: .area(CGRect(x: 0, y: 0, width: 100, height: 50)),
             sourceRect: CGRect(x: 0, y: 0, width: 100, height: 50),
             scaleFactor: 2.0
         )
@@ -184,10 +185,10 @@ final class CaptureServiceTests: XCTestCase {
     }
 }
 
-// MARK: - Mock Types
+// MARK: - Notes
 
-/// Mock SCDisplay for testing (cannot actually instantiate SCDisplay)
-private class MockSCDisplay: SCDisplay {
-    // SCDisplay cannot be subclassed, so this is a placeholder
-    // Real tests would need to use actual screen capture or dependency injection
-}
+// Note: SCDisplay cannot be subclassed or mocked directly.
+// Tests that require SCDisplay should either:
+// 1. Use .area() mode for CaptureResult instead of .display()
+// 2. Use integration tests with actual screen capture
+// 3. Use protocol-based dependency injection

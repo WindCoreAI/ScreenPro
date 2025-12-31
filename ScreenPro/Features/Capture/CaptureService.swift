@@ -157,24 +157,53 @@ final class CaptureService: ObservableObject, CaptureServiceProtocol {
         in displayFrame: CGRect,
         scaleFactor: CGFloat
     ) throws -> CGImage {
+        // Validate input rect has positive dimensions
+        guard rect.width > 0 && rect.height > 0 else {
+            throw CaptureError.cropFailed
+        }
+
         // Convert screen coordinates to image coordinates
         let imageSize = CGSize(width: image.width, height: image.height)
+
+        // Validate image has valid dimensions
+        guard imageSize.width > 0 && imageSize.height > 0 else {
+            throw CaptureError.cropFailed
+        }
+
         let imageRect = DisplayManager.convertToImageCoordinates(
             rect,
             in: displayFrame,
             imageSize: imageSize
         )
 
+        // Validate converted rect has positive dimensions and valid origin
+        guard imageRect.width > 0 && imageRect.height > 0 &&
+              imageRect.origin.x.isFinite && imageRect.origin.y.isFinite else {
+            throw CaptureError.cropFailed
+        }
+
         // Validate crop rect is within image bounds
         let imageBounds = CGRect(origin: .zero, size: imageSize)
         let clampedRect = imageRect.intersection(imageBounds)
 
-        guard !clampedRect.isEmpty else {
+        guard !clampedRect.isEmpty && clampedRect.width >= 1 && clampedRect.height >= 1 else {
+            throw CaptureError.cropFailed
+        }
+
+        // Ensure integer pixel boundaries for cropping
+        let integralRect = CGRect(
+            x: floor(clampedRect.origin.x),
+            y: floor(clampedRect.origin.y),
+            width: ceil(clampedRect.width),
+            height: ceil(clampedRect.height)
+        ).intersection(imageBounds)
+
+        guard !integralRect.isEmpty else {
             throw CaptureError.cropFailed
         }
 
         // Perform the crop
-        guard let cropped = image.cropping(to: clampedRect) else {
+        guard let cropped = image.cropping(to: integralRect) else {
             throw CaptureError.cropFailed
         }
 

@@ -5,8 +5,8 @@ import AppKit
 // MARK: - ThumbnailGenerator
 
 /// Generates thumbnails from full-resolution captures.
-/// Actor-isolated for thread-safe async generation.
-actor ThumbnailGenerator {
+/// Uses a simple Sendable class with static methods for thread-safe async generation.
+final class ThumbnailGenerator: Sendable {
     // MARK: - Thumbnail Generation
 
     /// Generates a thumbnail from a CGImage.
@@ -15,14 +15,14 @@ actor ThumbnailGenerator {
     ///   - maxPixelSize: Maximum dimension in pixels (default 240).
     ///   - scaleFactor: Retina scale factor (default 2.0).
     /// - Returns: The generated thumbnail image, or nil if generation fails.
-    nonisolated func generateThumbnail(
+    func generateThumbnail(
         from image: CGImage,
         maxPixelSize: Int = 240,
         scaleFactor: CGFloat = 2.0
     ) async -> CGImage? {
         // Perform scaling on background thread
         await Task.detached(priority: .userInitiated) {
-            self.scaleCGImage(image, maxPixelSize: maxPixelSize)
+            ThumbnailGenerator.scaleCGImage(image, maxPixelSize: maxPixelSize)
         }.value
     }
 
@@ -33,7 +33,7 @@ actor ThumbnailGenerator {
     ///   - image: The source image.
     ///   - maxPixelSize: Maximum dimension (width or height).
     /// - Returns: The scaled image, or nil if scaling fails.
-    private nonisolated func scaleCGImage(
+    private static func scaleCGImage(
         _ image: CGImage,
         maxPixelSize: Int
     ) -> CGImage? {
@@ -98,7 +98,7 @@ extension ThumbnailGenerator {
     ///   - size: The size of the placeholder.
     ///   - color: The fill color.
     /// - Returns: A solid color image.
-    nonisolated func createPlaceholder(
+    func createPlaceholder(
         size: CGSize,
         color: NSColor = .gray
     ) -> NSImage {
