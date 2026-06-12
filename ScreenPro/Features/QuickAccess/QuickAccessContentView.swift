@@ -27,6 +27,9 @@ struct QuickAccessContentView: View {
                     onAnnotate: {
                         controller.openInAnnotator(item)
                     },
+                    onUpload: controller.isCloudUploadEnabled
+                        ? { controller.uploadToCloud(item) }
+                        : nil,
                     onDismiss: {
                         controller.dismiss(item)
                     }

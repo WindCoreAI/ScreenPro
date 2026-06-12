@@ -65,8 +65,11 @@ xcodebuild -scheme ScreenPro -configuration Release archive
 - FileManager for recordings, UserDefaults for settings (via existing SettingsManager) (005-screen-recording)
 - Swift 5.9+ with strict concurrency checking enabled + ScreenCaptureKit (capture), Vision (OCR, image registration), AVFoundation (camera, recording), Core Graphics (image processing), Core Image (effects), ImageIO (export), SwiftUI + AppKi (006-advanced-features)
 - In-memory during editing; FileManager for export via StorageService (006-advanced-features)
+- Swift 5.9+ with strict concurrency checking enabled + SwiftData (capture history persistence), URLSession (cloud upload), os.signpost (performance instrumentation), SwiftUI + AppKit (history browser, onboarding windows) (007-cloud-polish)
+- SwiftData for capture history; UserDefaults (via SettingsManager) for cloud/history/onboarding settings with migration-tolerant decoding (007-cloud-polish)
 
 ## Recent Changes
+- 007-cloud-polish: Added CloudService (multipart upload, shareable links with expiry/password, delete tokens), capture history (SwiftData store + browser window with search/filter/grid/list/drag-out), Quick Access upload action (⌘U), onboarding flow, Cloud settings tab, accessibility support (VoiceOver announcer, keyboard navigation, Reduce Motion), performance monitoring (signposts, memory-pressure handling), and tolerant Settings decoding so upgrades no longer reset preferences
 - 003-quick-access-overlay: Implemented Quick Access overlay feature with floating thumbnail preview, copy/save/annotate/dismiss actions, drag-and-drop to external apps, keyboard navigation, position configuration, and auto-dismiss
 - 002-basic-capture: Added area/window/fullscreen capture with ScreenCaptureKit integration
 - 001-project-setup: Added Swift 5.9+ with strict concurrency checking enabled + SwiftUI (UI), AppKit (NSStatusItem, NSWindow), ScreenCaptureKit (permission detection), AVFoundation (microphone permission), Carbon (global hotkeys)

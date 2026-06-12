@@ -146,6 +146,21 @@ struct Settings: Codable, Equatable {
     var cameraOverlayShape: OverlayShape = .circle
     var cameraOverlaySize: Double = 150.0
 
+    // MARK: - Cloud & Sharing Settings (007-cloud-polish)
+    var cloudUploadEnabled: Bool = false
+    var cloudServerURL: String = "https://api.screenpro.cloud"
+    var cloudAPIKey: String = ""
+    var cloudDefaultExpiry: LinkExpiry = .never
+    var copyLinkAfterUpload: Bool = true
+
+    // MARK: - Capture History Settings (007-cloud-polish)
+    var captureHistoryEnabled: Bool = true
+    /// Days of history to retain; 0 retains forever.
+    var historyRetentionDays: Int = 30
+
+    // MARK: - Onboarding (007-cloud-polish)
+    var hasCompletedOnboarding: Bool = false
+
     // MARK: - Default Values
 
     static var defaultPicturesDirectory: URL {
@@ -154,6 +169,102 @@ struct Settings: Codable, Equatable {
     }
 
     static var `default`: Settings { Settings() }
+
+    // MARK: - Coding Keys
+
+    enum CodingKeys: String, CodingKey {
+        case launchAtLogin, showMenuBarIcon, playCaptureSound, showNotifications
+        case copyToClipboardAfterCapture
+        case defaultSaveLocation, fileNamingPattern, defaultImageFormat
+        case includeCursor, showCrosshair, showMagnifier, hideDesktopIcons
+        case defaultVideoFormat, videoQuality, videoFPS
+        case recordMicrophone, recordSystemAudio, showClicks, showKeystrokes
+        case showQuickAccess, quickAccessPosition, autoDismissDelay
+        case shortcuts
+        case scrollingCaptureMaxFrames, scrollingCaptureOverlapRatio
+        case ocrLanguages, ocrCopyToClipboardAutomatically
+        case selfTimerDefaultDuration
+        case magnifierEnabled, magnifierZoomLevel
+        case defaultBackgroundStyle, defaultBackgroundPadding
+        case cameraOverlayEnabled, cameraOverlayPosition, cameraOverlayShape, cameraOverlaySize
+        case cloudUploadEnabled, cloudServerURL, cloudAPIKey, cloudDefaultExpiry, copyLinkAfterUpload
+        case captureHistoryEnabled, historyRetentionDays
+        case hasCompletedOnboarding
+    }
+}
+
+// MARK: - Tolerant Decoding (007-cloud-polish)
+
+/// Custom decoding that falls back to defaults for missing keys, so settings
+/// saved by an older app version survive upgrades instead of being reset.
+/// (Synthesized decoding throws on any missing key, which previously caused
+/// `SettingsManager.load()` to discard all user preferences after an update.)
+extension Settings {
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        var settings = Settings()
+
+        func decode<T: Decodable>(_ type: T.Type, _ key: CodingKeys, into value: inout T) {
+            if let decoded = try? container.decodeIfPresent(type, forKey: key) {
+                value = decoded
+            }
+        }
+
+        decode(Bool.self, .launchAtLogin, into: &settings.launchAtLogin)
+        decode(Bool.self, .showMenuBarIcon, into: &settings.showMenuBarIcon)
+        decode(Bool.self, .playCaptureSound, into: &settings.playCaptureSound)
+        decode(Bool.self, .showNotifications, into: &settings.showNotifications)
+        decode(Bool.self, .copyToClipboardAfterCapture, into: &settings.copyToClipboardAfterCapture)
+
+        decode(URL.self, .defaultSaveLocation, into: &settings.defaultSaveLocation)
+        decode(String.self, .fileNamingPattern, into: &settings.fileNamingPattern)
+        decode(ImageFormat.self, .defaultImageFormat, into: &settings.defaultImageFormat)
+        decode(Bool.self, .includeCursor, into: &settings.includeCursor)
+        decode(Bool.self, .showCrosshair, into: &settings.showCrosshair)
+        decode(Bool.self, .showMagnifier, into: &settings.showMagnifier)
+        decode(Bool.self, .hideDesktopIcons, into: &settings.hideDesktopIcons)
+
+        decode(VideoFormat.self, .defaultVideoFormat, into: &settings.defaultVideoFormat)
+        decode(VideoQuality.self, .videoQuality, into: &settings.videoQuality)
+        decode(Int.self, .videoFPS, into: &settings.videoFPS)
+        decode(Bool.self, .recordMicrophone, into: &settings.recordMicrophone)
+        decode(Bool.self, .recordSystemAudio, into: &settings.recordSystemAudio)
+        decode(Bool.self, .showClicks, into: &settings.showClicks)
+        decode(Bool.self, .showKeystrokes, into: &settings.showKeystrokes)
+
+        decode(Bool.self, .showQuickAccess, into: &settings.showQuickAccess)
+        decode(QuickAccessPosition.self, .quickAccessPosition, into: &settings.quickAccessPosition)
+        decode(TimeInterval.self, .autoDismissDelay, into: &settings.autoDismissDelay)
+
+        decode([ShortcutAction: Shortcut].self, .shortcuts, into: &settings.shortcuts)
+
+        decode(Int.self, .scrollingCaptureMaxFrames, into: &settings.scrollingCaptureMaxFrames)
+        decode(Double.self, .scrollingCaptureOverlapRatio, into: &settings.scrollingCaptureOverlapRatio)
+        decode([String].self, .ocrLanguages, into: &settings.ocrLanguages)
+        decode(Bool.self, .ocrCopyToClipboardAutomatically, into: &settings.ocrCopyToClipboardAutomatically)
+        decode(Int.self, .selfTimerDefaultDuration, into: &settings.selfTimerDefaultDuration)
+        decode(Bool.self, .magnifierEnabled, into: &settings.magnifierEnabled)
+        decode(Int.self, .magnifierZoomLevel, into: &settings.magnifierZoomLevel)
+        decode(BackgroundStyle.self, .defaultBackgroundStyle, into: &settings.defaultBackgroundStyle)
+        decode(Double.self, .defaultBackgroundPadding, into: &settings.defaultBackgroundPadding)
+        decode(Bool.self, .cameraOverlayEnabled, into: &settings.cameraOverlayEnabled)
+        decode(OverlayPosition.self, .cameraOverlayPosition, into: &settings.cameraOverlayPosition)
+        decode(OverlayShape.self, .cameraOverlayShape, into: &settings.cameraOverlayShape)
+        decode(Double.self, .cameraOverlaySize, into: &settings.cameraOverlaySize)
+
+        decode(Bool.self, .cloudUploadEnabled, into: &settings.cloudUploadEnabled)
+        decode(String.self, .cloudServerURL, into: &settings.cloudServerURL)
+        decode(String.self, .cloudAPIKey, into: &settings.cloudAPIKey)
+        decode(LinkExpiry.self, .cloudDefaultExpiry, into: &settings.cloudDefaultExpiry)
+        decode(Bool.self, .copyLinkAfterUpload, into: &settings.copyLinkAfterUpload)
+
+        decode(Bool.self, .captureHistoryEnabled, into: &settings.captureHistoryEnabled)
+        decode(Int.self, .historyRetentionDays, into: &settings.historyRetentionDays)
+
+        decode(Bool.self, .hasCompletedOnboarding, into: &settings.hasCompletedOnboarding)
+
+        self = settings
+    }
 }
 
 // MARK: - SettingsManager Protocol

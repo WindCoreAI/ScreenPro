@@ -140,6 +140,23 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
     /// The background tool window (T068)
     private var backgroundToolWindow: BackgroundToolWindow?
 
+    /// The capture history store (007-cloud-polish)
+    /// nil when the SwiftData container fails to initialize; history is then disabled.
+    private(set) lazy var historyStore: CaptureHistoryStore? = {
+        do {
+            return try CaptureHistoryStore()
+        } catch {
+            print("[AppCoordinator] Failed to initialize history store: \(error)")
+            return nil
+        }
+    }()
+
+    /// The capture history window (007-cloud-polish)
+    private var historyWindowController: HistoryWindowController?
+
+    /// The onboarding window (007-cloud-polish)
+    private var onboardingWindowController: OnboardingWindowController?
+
     // MARK: - Private Properties
 
     private var cancellables = Set<AnyCancellable>()
@@ -187,8 +204,22 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
         // Register shortcuts
         shortcutManager.registerAll()
 
+        // Apply history retention policy (007-cloud-polish)
+        if settingsManager.settings.captureHistoryEnabled {
+            historyStore?.applyRetentionPolicy(days: settingsManager.settings.historyRetentionDays)
+        }
+
+        // Shed caches when the system is under memory pressure (007-cloud-polish)
+        MemoryPressureHandler.shared.startMonitoring { level in
+            print("[AppCoordinator] Memory pressure (\(level)) — clearing caches")
+            URLCache.shared.removeAllCachedResponses()
+        }
+
         isReady = true
         print("[AppCoordinator] Initialization complete. isReady=\(isReady), state=\(state)")
+
+        // First-run experience (007-cloud-polish)
+        showOnboardingIfNeeded()
     }
 
     /// Re-checks permissions (call after user grants permission in System Preferences)
@@ -208,6 +239,7 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
         shortcutManager.unregisterAll()
         settingsManager.save()
         dismissSelectionWindows()
+        MemoryPressureHandler.shared.stopMonitoring()
     }
 
     // MARK: - Actions (T024, T025, T026, T027)
@@ -320,6 +352,162 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
         NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
     }
 
+    // MARK: - Capture History (007-cloud-polish)
+
+    /// Records a capture in history if history is enabled.
+    func recordHistory(for result: CaptureResult, fileURL: URL?) {
+        guard settingsManager.settings.captureHistoryEnabled else { return }
+        historyStore?.recordCapture(result, fileURL: fileURL)
+    }
+
+    /// Opens the capture history browser window.
+    func showHistory() {
+        guard let store = historyStore else {
+            showErrorNotification("Capture history is unavailable.")
+            return
+        }
+        if historyWindowController == nil {
+            historyWindowController = HistoryWindowController(store: store)
+        }
+        store.fetchItems()
+        historyWindowController?.show()
+    }
+
+    // MARK: - Onboarding (007-cloud-polish)
+
+    /// Shows the first-run onboarding flow if it hasn't been completed.
+    func showOnboardingIfNeeded() {
+        guard !settingsManager.settings.hasCompletedOnboarding else { return }
+        showOnboarding()
+    }
+
+    /// Shows the onboarding window (also reachable from the menu as a welcome guide).
+    func showOnboarding() {
+        if onboardingWindowController == nil {
+            onboardingWindowController = OnboardingWindowController(
+                permissionManager: permissionManager
+            ) { [weak self] in
+                self?.completeOnboarding()
+            }
+        }
+        onboardingWindowController?.show()
+    }
+
+    /// Marks onboarding as completed and closes the window.
+    /// Re-entrant safe: closing the window fires its delegate, which calls back here.
+    private func completeOnboarding() {
+        if !settingsManager.settings.hasCompletedOnboarding {
+            settingsManager.settings.hasCompletedOnboarding = true
+            settingsManager.save()
+        }
+        if let controller = onboardingWindowController {
+            onboardingWindowController = nil
+            controller.close()
+        }
+    }
+
+    // MARK: - Cloud Upload (007-cloud-polish)
+
+    /// Uploads a capture to the configured cloud server and copies the
+    /// shareable link to the clipboard.
+    func uploadToCloud(_ result: CaptureResult) {
+        let settings = settingsManager.settings
+
+        guard settings.cloudUploadEnabled else {
+            showErrorNotification(CloudError.notConfigured.localizedDescription)
+            return
+        }
+        guard let baseURL = URL(string: settings.cloudServerURL), baseURL.host != nil else {
+            showErrorNotification(CloudError.invalidServerURL.localizedDescription)
+            return
+        }
+        guard !state.isBusy else { return }
+
+        state = .uploading(result.id)
+
+        let service = CloudService(
+            baseURL: baseURL,
+            apiKey: settings.cloudAPIKey.isEmpty ? nil : settings.cloudAPIKey
+        )
+        // HEIC encoding falls back to PNG (matching CaptureService), so upload
+        // metadata must reflect the actual encoding.
+        let format: ImageFormat = settings.defaultImageFormat == .heic ? .png : settings.defaultImageFormat
+        var filename = settingsManager.generateFilename(for: .screenshot)
+        if settings.defaultImageFormat == .heic {
+            filename = (filename as NSString).deletingPathExtension + ".png"
+        }
+        let config = CloudService.UploadConfig(expiresIn: settings.cloudDefaultExpiry.timeInterval)
+
+        Task {
+            do {
+                guard let data = Self.encodeImage(result.image, format: format) else {
+                    throw CloudError.encodingFailed
+                }
+
+                let upload = try await service.upload(
+                    data: data,
+                    filename: filename,
+                    mimeType: CloudService.mimeType(forFileExtension: format.fileExtension),
+                    config: config
+                )
+
+                if settingsManager.settings.copyLinkAfterUpload {
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(upload.url.absoluteString, forType: .string)
+                }
+
+                if settingsManager.settings.captureHistoryEnabled {
+                    historyStore?.attachCloudUpload(
+                        captureID: result.id,
+                        result: result,
+                        url: upload.url,
+                        cloudID: upload.id,
+                        deleteToken: upload.deleteToken
+                    )
+                }
+
+                AccessibilityAnnouncer.shared.announceUploadComplete()
+                showUploadNotification(for: upload)
+            } catch {
+                showErrorNotification(error.localizedDescription)
+            }
+            state = .idle
+        }
+    }
+
+    /// Shows a success notification for a completed upload.
+    private func showUploadNotification(for upload: CloudService.UploadResult) {
+        guard settingsManager.settings.showNotifications else { return }
+
+        let content = UNMutableNotificationContent()
+        content.title = "Upload Complete"
+        content.body = settingsManager.settings.copyLinkAfterUpload
+            ? "Shareable link copied to clipboard"
+            : upload.url.absoluteString
+        content.sound = .default
+
+        let request = UNNotificationRequest(
+            identifier: UUID().uuidString,
+            content: content,
+            trigger: nil
+        )
+
+        UNUserNotificationCenter.current().add(request)
+    }
+
+    /// Encodes a CGImage in the given format for upload.
+    private static func encodeImage(_ image: CGImage, format: ImageFormat) -> Data? {
+        let bitmapRep = NSBitmapImageRep(cgImage: image)
+        switch format {
+        case .jpeg:
+            return bitmapRep.representation(using: .jpeg, properties: [.compressionFactor: 0.9])
+        case .tiff:
+            return bitmapRep.representation(using: .tiff, properties: [:])
+        case .png, .heic:
+            return bitmapRep.representation(using: .png, properties: [:])
+        }
+    }
+
     // MARK: - Area Selection (T026)
 
     /// Begins area selection by creating overlay windows on all screens.
@@ -414,10 +602,17 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
 
     /// Handles a successful capture result.
     private func handleCaptureResult(_ result: CaptureResult) {
+        // VoiceOver feedback (007-cloud-polish)
+        AccessibilityAnnouncer.shared.announceCaptureComplete(type: "Screenshot")
+
         // Check if Quick Access is enabled
         if settingsManager.settings.showQuickAccess {
             // Route to Quick Access overlay
             quickAccessController.addCapture(result)
+
+            // Record in history with no file yet; saving from the overlay
+            // updates this entry with the file path (007-cloud-polish)
+            recordHistory(for: result, fileURL: nil)
 
             // Play capture sound if enabled
             captureService.playCaptureSound()
@@ -430,6 +625,7 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
             do {
                 let url = try captureService.save(result)
                 print("Screenshot saved to: \(url.path)")
+                recordHistory(for: result, fileURL: url)
             } catch {
                 print("Failed to save screenshot: \(error)")
             }
@@ -1268,28 +1464,33 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
         hideRecordingControls()
         isGIFRecording = false
 
-        // Show in Quick Access if enabled
-        if settingsManager.settings.showQuickAccess {
-            // Generate thumbnail from recording and show in Quick Access
-            Task {
-                if let thumbnail = await generateThumbnailFromRecording(result),
-                   let display = captureService.availableDisplays.first {
-                    let captureResult = CaptureResult(
-                        id: result.id,
-                        image: thumbnail,
-                        mode: .display(display), // Recording mode - used for display purposes
-                        timestamp: result.timestamp,
-                        sourceRect: .zero,
-                        scaleFactor: 1.0
-                    )
-                    quickAccessController.addCapture(captureResult)
-                } else {
-                    // Fallback to notification if thumbnail generation fails
-                    showRecordingNotification(for: result)
-                }
+        AccessibilityAnnouncer.shared.announceRecordingStopped(duration: result.duration)
+
+        Task {
+            let thumbnail = await generateThumbnailFromRecording(result)
+
+            // Record in capture history (007-cloud-polish)
+            if settingsManager.settings.captureHistoryEnabled {
+                historyStore?.recordRecording(result, thumbnail: thumbnail)
             }
-        } else {
-            showRecordingNotification(for: result)
+
+            // Show in Quick Access if enabled
+            if settingsManager.settings.showQuickAccess,
+               let thumbnail,
+               let display = captureService.availableDisplays.first {
+                let captureResult = CaptureResult(
+                    id: result.id,
+                    image: thumbnail,
+                    mode: .display(display), // Recording mode - used for display purposes
+                    timestamp: result.timestamp,
+                    sourceRect: .zero,
+                    scaleFactor: 1.0
+                )
+                quickAccessController.addCapture(captureResult)
+            } else {
+                // Fallback to notification if Quick Access is off or thumbnail failed
+                showRecordingNotification(for: result)
+            }
         }
 
         state = .idle

@@ -163,6 +163,14 @@ struct MenuBarView: View {
             .disabled(true)
             .accessibilityLabel("All-in-One")
             .accessibilityHint("Quick access to all capture modes, not yet available")
+
+            // Capture History (007-cloud-polish)
+            Button("Capture History...") {
+                coordinator.showHistory()
+            }
+            .keyboardShortcut("h", modifiers: [.command, .shift])
+            .accessibilityLabel("Capture History")
+            .accessibilityHint("Browse, search, and share past captures")
         }
 
         Divider()
@@ -174,6 +182,13 @@ struct MenuBarView: View {
         .keyboardShortcut(",", modifiers: .command)
         .accessibilityLabel("Settings")
         .accessibilityHint("Open application settings")
+
+        // Welcome guide re-run (007-cloud-polish)
+        Button("Welcome Guide...") {
+            coordinator.showOnboarding()
+        }
+        .accessibilityLabel("Welcome Guide")
+        .accessibilityHint("Show the first-run setup guide again")
 
         Divider()
 

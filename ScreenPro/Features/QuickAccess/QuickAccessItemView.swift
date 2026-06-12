@@ -23,6 +23,10 @@ struct QuickAccessItemView: View {
     /// Closure called when the Annotate button is tapped.
     let onAnnotate: () -> Void
 
+    /// Closure called when the Upload button is tapped.
+    /// nil hides the upload button (cloud uploads disabled in settings).
+    let onUpload: (() -> Void)?
+
     /// Closure called when the Close/Dismiss button is tapped.
     let onDismiss: () -> Void
 
@@ -79,6 +83,14 @@ struct QuickAccessItemView: View {
                     label: "Annotate (Return)",
                     action: onAnnotate
                 )
+
+                if let onUpload {
+                    actionButton(
+                        icon: "icloud.and.arrow.up",
+                        label: "Upload to Cloud (⌘U)",
+                        action: onUpload
+                    )
+                }
 
                 Spacer()
 

@@ -93,6 +93,8 @@ final class QuickAccessWindow: NSWindow {
                     controller?.performActionOnSelected(.save)
                 case "a":
                     controller?.performActionOnSelected(.annotate)
+                case "u":
+                    controller?.performActionOnSelected(.upload)
                 default:
                     super.keyDown(with: event)
                 }
@@ -115,6 +117,9 @@ enum QuickAccessAction {
 
     /// Open image in annotation editor (Return/Enter or Cmd+A).
     case annotate
+
+    /// Upload to cloud and copy the shareable link (Cmd+U).
+    case upload
 
     /// Dismiss without saving (Escape or Close button).
     case dismiss
