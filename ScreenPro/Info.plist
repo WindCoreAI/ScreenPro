@@ -34,5 +34,7 @@
 	<string>ScreenPro needs screen recording permission to capture screenshots and record your screen.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>ScreenPro needs microphone access to record audio with your screen recordings.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>ScreenPro transcribes your narration on-device to create review notes during Review Recordings. No audio leaves your Mac.</string>
 </dict>
 </plist>

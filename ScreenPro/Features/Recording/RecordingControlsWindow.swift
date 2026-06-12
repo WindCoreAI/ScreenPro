@@ -9,27 +9,36 @@ final class RecordingControlsWindow: NSWindow {
 
     private let recordingService: RecordingService
 
+    /// Review session shown on the controls during Review Recordings
+    /// (008-review-recording); nil for ordinary recordings.
+    private let reviewSession: ReviewSessionService?
+
     // MARK: - Callbacks
 
     private let onStop: () -> Void
     private let onPause: () -> Void
     private let onResume: () -> Void
     private let onCancel: () -> Void
+    private let onFlag: (() -> Void)?
 
     // MARK: - Initialization
 
     init(
         recordingService: RecordingService,
+        reviewSession: ReviewSessionService? = nil,
         onStop: @escaping () -> Void,
         onPause: @escaping () -> Void,
         onResume: @escaping () -> Void,
-        onCancel: @escaping () -> Void
+        onCancel: @escaping () -> Void,
+        onFlag: (() -> Void)? = nil
     ) {
         self.recordingService = recordingService
+        self.reviewSession = reviewSession
         self.onStop = onStop
         self.onPause = onPause
         self.onResume = onResume
         self.onCancel = onCancel
+        self.onFlag = onFlag
 
         super.init(
             contentRect: NSRect(x: 0, y: 0, width: 260, height: 48),
@@ -72,6 +81,8 @@ final class RecordingControlsWindow: NSWindow {
     private func setupContent() {
         let controlsView = RecordingControlsView(
             recordingService: recordingService,
+            reviewSession: reviewSession,
+            onFlag: onFlag,
             onStop: onStop,
             onPause: onPause,
             onResume: onResume,

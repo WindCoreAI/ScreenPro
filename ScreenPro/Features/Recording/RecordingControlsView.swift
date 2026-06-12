@@ -7,6 +7,11 @@ import AppKit
 struct RecordingControlsView: View {
     @ObservedObject var recordingService: RecordingService
 
+    /// Set during Review Recordings (008-review-recording); adds the flag
+    /// button and issue-count badge to the controls.
+    var reviewSession: ReviewSessionService? = nil
+    var onFlag: (() -> Void)? = nil
+
     let onStop: () -> Void
     let onPause: () -> Void
     let onResume: () -> Void
@@ -26,6 +31,17 @@ struct RecordingControlsView: View {
                 // GIF frame count indicator (if recording GIF)
                 if recordingService.gifFrameCount > 0 {
                     gifFrameIndicator
+                }
+
+                // Review flag controls (008-review-recording)
+                if let reviewSession, let onFlag {
+                    Divider()
+                        .frame(height: 20)
+                    ReviewFlagControls(
+                        session: reviewSession,
+                        isRecording: recordingService.state == .recording,
+                        onFlag: onFlag
+                    )
                 }
 
                 Divider()
@@ -181,6 +197,44 @@ struct RecordingControlsView: View {
 
     private func startPulsingAnimation() {
         isPulsing = true
+    }
+}
+
+// MARK: - ReviewFlagControls (008-review-recording)
+
+/// Flag button + issue-count badge shown on the controls during a Review
+/// Recording. Mirrors the global ⌃⌥F hotkey (FR-002).
+struct ReviewFlagControls: View {
+    @ObservedObject var session: ReviewSessionService
+    let isRecording: Bool
+    let onFlag: () -> Void
+
+    var body: some View {
+        HStack(spacing: 6) {
+            Button(action: onFlag) {
+                Image(systemName: "flag.fill")
+                    .font(.system(size: 13, weight: .semibold))
+                    .foregroundColor(.orange)
+            }
+            .buttonStyle(ControlButtonStyle())
+            .disabled(!isRecording)
+            .accessibilityLabel("Flag this moment")
+            .accessibilityHint("Captures a screenshot and creates a review note at the current time")
+
+            if !session.issues.isEmpty {
+                Text("\(session.issues.count)")
+                    .font(.system(.caption2, design: .monospaced))
+                    .foregroundColor(.white.opacity(0.8))
+                    .accessibilityLabel("\(session.issues.count) issues flagged")
+            }
+
+            if session.voiceNotesActive {
+                Image(systemName: "waveform")
+                    .font(.system(size: 10))
+                    .foregroundColor(.blue)
+                    .accessibilityLabel("Voice notes active")
+            }
+        }
     }
 }
 

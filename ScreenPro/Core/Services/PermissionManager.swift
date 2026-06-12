@@ -2,6 +2,7 @@ import Foundation
 @preconcurrency import ScreenCaptureKit
 import AVFoundation
 import AppKit
+import Speech
 
 // MARK: - Permission Status Enum (T009)
 
@@ -27,6 +28,10 @@ protocol PermissionManagerProtocol: ObservableObject {
     func requestMicrophonePermission() async -> Bool
     func openMicrophonePreferences()
 
+    func checkSpeechRecognitionPermission() -> PermissionStatus
+    func requestSpeechRecognitionPermission() async -> Bool
+    func openSpeechRecognitionPreferences()
+
     func checkInitialPermissions()
 }
 
@@ -38,6 +43,7 @@ final class PermissionManager: ObservableObject, PermissionManagerProtocol {
 
     @Published private(set) var screenRecordingStatus: PermissionStatus = .notDetermined
     @Published private(set) var microphoneStatus: PermissionStatus = .notDetermined
+    @Published private(set) var speechRecognitionStatus: PermissionStatus = .notDetermined
 
     // MARK: - Initialization
 
@@ -117,6 +123,46 @@ final class PermissionManager: ObservableObject, PermissionManagerProtocol {
     /// Opens System Preferences to the Microphone privacy pane
     func openMicrophonePreferences() {
         let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone")!
+        NSWorkspace.shared.open(url)
+    }
+
+    // MARK: - Speech Recognition Permission (008-review-recording)
+    // Requested lazily at the first Review Recording start with voice notes
+    // enabled (Constitution VII), never at launch. Recognition itself runs
+    // strictly on-device (research.md R1).
+
+    /// Checks current speech recognition authorization status
+    func checkSpeechRecognitionPermission() -> PermissionStatus {
+        let status = SFSpeechRecognizer.authorizationStatus()
+        let mappedStatus: PermissionStatus
+        switch status {
+        case .authorized:
+            mappedStatus = .authorized
+        case .denied, .restricted:
+            mappedStatus = .denied
+        case .notDetermined:
+            mappedStatus = .notDetermined
+        @unknown default:
+            mappedStatus = .notDetermined
+        }
+        speechRecognitionStatus = mappedStatus
+        return mappedStatus
+    }
+
+    /// Requests speech recognition permission from the user
+    func requestSpeechRecognitionPermission() async -> Bool {
+        let granted = await withCheckedContinuation { continuation in
+            SFSpeechRecognizer.requestAuthorization { status in
+                continuation.resume(returning: status == .authorized)
+            }
+        }
+        speechRecognitionStatus = granted ? .authorized : .denied
+        return granted
+    }
+
+    /// Opens System Preferences to the Speech Recognition privacy pane
+    func openSpeechRecognitionPreferences() {
+        let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_SpeechRecognition")!
         NSWorkspace.shared.open(url)
     }
 

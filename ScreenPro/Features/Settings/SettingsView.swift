@@ -44,6 +44,12 @@ struct SettingsView: View {
                     Label("Cloud", systemImage: "icloud")
                 }
                 .tag(5)
+
+            ReviewSettingsTab()
+                .tabItem {
+                    Label("Review", systemImage: "flag.checkered")
+                }
+                .tag(6)
         }
         .frame(width: 500, height: 500)
     }

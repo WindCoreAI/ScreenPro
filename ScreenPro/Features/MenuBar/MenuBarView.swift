@@ -124,6 +124,35 @@ struct MenuBarView: View {
             .accessibilityLabel("Record GIF")
             .accessibilityHint("Record screen as animated GIF")
 
+            Divider()
+
+            // Review Recording Menu (008-review-recording)
+            Menu("Record for Review") {
+                Button("Review Fullscreen") {
+                    coordinator.startReviewRecording()
+                }
+                .disabled(!isReady || isRecording)
+                .accessibilityLabel("Review Recording Fullscreen")
+                .accessibilityHint("Record the screen while flagging issues by hotkey or voice; generates a review report")
+
+                Button("Review Window...") {
+                    coordinator.startReviewRecordingWindow()
+                }
+                .disabled(!isReady || isRecording)
+                .accessibilityLabel("Review Recording Window")
+                .accessibilityHint("Select a window to record for review")
+
+                Button("Review Area...") {
+                    coordinator.startReviewRecordingArea()
+                }
+                .disabled(!isReady || isRecording)
+                .accessibilityLabel("Review Recording Area")
+                .accessibilityHint("Select an area to record for review")
+            }
+            .disabled(!isReady || isRecording)
+            .accessibilityLabel("Record for Review")
+            .accessibilityHint("Record while narrating or flagging issues; produces a review report for follow-up fixes")
+
             // Show stop recording option if currently recording
             if isRecording {
                 Divider()

@@ -161,6 +161,14 @@ struct Settings: Codable, Equatable {
     // MARK: - Onboarding (007-cloud-polish)
     var hasCompletedOnboarding: Bool = false
 
+    // MARK: - Review Recording Settings (008-review-recording)
+    var reviewVoiceNotesEnabled: Bool = true
+    /// BCP-47 locale identifier for transcription; empty string → system locale.
+    var reviewTranscriptionLocale: String = ""
+    var reviewBundleIncludesVideo: Bool = true
+    var reviewBundleIncludesTranscript: Bool = true
+    var reviewShowSummaryBeforeExport: Bool = true
+
     // MARK: - Default Values
 
     static var defaultPicturesDirectory: URL {
@@ -190,6 +198,9 @@ struct Settings: Codable, Equatable {
         case cloudUploadEnabled, cloudServerURL, cloudAPIKey, cloudDefaultExpiry, copyLinkAfterUpload
         case captureHistoryEnabled, historyRetentionDays
         case hasCompletedOnboarding
+        case reviewVoiceNotesEnabled, reviewTranscriptionLocale
+        case reviewBundleIncludesVideo, reviewBundleIncludesTranscript
+        case reviewShowSummaryBeforeExport
     }
 }
 
@@ -262,6 +273,12 @@ extension Settings {
         decode(Int.self, .historyRetentionDays, into: &settings.historyRetentionDays)
 
         decode(Bool.self, .hasCompletedOnboarding, into: &settings.hasCompletedOnboarding)
+
+        decode(Bool.self, .reviewVoiceNotesEnabled, into: &settings.reviewVoiceNotesEnabled)
+        decode(String.self, .reviewTranscriptionLocale, into: &settings.reviewTranscriptionLocale)
+        decode(Bool.self, .reviewBundleIncludesVideo, into: &settings.reviewBundleIncludesVideo)
+        decode(Bool.self, .reviewBundleIncludesTranscript, into: &settings.reviewBundleIncludesTranscript)
+        decode(Bool.self, .reviewShowSummaryBeforeExport, into: &settings.reviewShowSummaryBeforeExport)
 
         self = settings
     }
