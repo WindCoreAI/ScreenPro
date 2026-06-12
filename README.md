@@ -45,6 +45,15 @@ A powerful native macOS application for enhanced screenshot and screen recording
 - **Background Tool** - Create beautiful social media images
 - **Camera Overlay** - Picture-in-picture for recordings
 
+### Cloud & History
+- **Cloud Upload** - Upload captures to a configurable hosting server (⌘U from Quick Access)
+- **Shareable Links** - Links copied to clipboard, with optional expiration and password
+- **Capture History** - Browse, search, and filter past captures (SwiftData-backed)
+- **Drag & Drop from History** - Re-use any past capture directly from the browser
+- **Onboarding Flow** - First-run welcome, permissions, and shortcuts guide
+- **Accessibility** - VoiceOver announcements, keyboard navigation, Reduce Motion support
+- **Performance Monitoring** - Signpost instrumentation and memory-pressure handling
+
 ## Technology Stack
 
 - **Language**: Swift 5.9+ with strict concurrency
@@ -62,7 +71,7 @@ A powerful native macOS application for enhanced screenshot and screen recording
 | 4. Annotation Editor | ✅ Complete |
 | 5. Screen Recording | ✅ Complete |
 | 6. Advanced Features | ✅ Complete |
-| 7. Cloud & Polish | 🚧 In Progress |
+| 7. Cloud & Polish | ✅ Core complete (localization & app icon pending) |
 
 ## Build Instructions
 

@@ -155,6 +155,11 @@ final class QuickAccessWindowController: ObservableObject {
         window.setFrame(newFrame, display: true, animate: true)
     }
 
+    /// Whether cloud uploads are enabled in settings (007-cloud-polish).
+    var isCloudUploadEnabled: Bool {
+        settingsManager.settings.cloudUploadEnabled
+    }
+
     // MARK: - Capture Management
 
     /// Adds a capture and shows the overlay.
@@ -199,7 +204,16 @@ final class QuickAccessWindowController: ObservableObject {
     /// - Parameter item: The capture to save.
     /// - Throws: StorageError if save fails.
     func saveToFile(_ item: CaptureItem) throws {
-        _ = try captureService.save(item.result)
+        let url = try captureService.save(item.result)
+        coordinator?.recordHistory(for: item.result, fileURL: url)
+        queue.remove(item.id)
+        hideIfEmpty()
+    }
+
+    /// Uploads a capture to the cloud and copies the shareable link (007-cloud-polish).
+    /// - Parameter item: The capture to upload.
+    func uploadToCloud(_ item: CaptureItem) {
+        coordinator?.uploadToCloud(item.result)
         queue.remove(item.id)
         hideIfEmpty()
     }
@@ -242,6 +256,8 @@ final class QuickAccessWindowController: ObservableObject {
             }
         case .annotate:
             openInAnnotator(item)
+        case .upload:
+            uploadToCloud(item)
         case .dismiss:
             dismiss(item)
         }

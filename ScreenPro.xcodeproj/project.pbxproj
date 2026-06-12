@@ -111,6 +111,19 @@
 		F74D459C9CEE8D9CAFB300CF /* CaptureItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F2B4D55AD32E8D56E43F8B9 /* CaptureItem.swift */; };
 		F9824CBB9EC885F8B19F0692 /* CaptureQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = C18340C5958F9EDF6676E144 /* CaptureQueue.swift */; };
 		FA5A670AFD201D005531A4C7 /* RecordingFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09BC327374EE5231386DA4C6 /* RecordingFormat.swift */; };
+		7B0000000000000000000001 /* CloudService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F0000000000000000000001 /* CloudService.swift */; };
+		7B0000000000000000000002 /* PerformanceMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F0000000000000000000002 /* PerformanceMonitor.swift */; };
+		7B0000000000000000000003 /* AccessibilitySupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F0000000000000000000003 /* AccessibilitySupport.swift */; };
+		7B0000000000000000000004 /* CaptureHistoryItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F0000000000000000000004 /* CaptureHistoryItem.swift */; };
+		7B0000000000000000000005 /* CaptureHistoryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F0000000000000000000005 /* CaptureHistoryStore.swift */; };
+		7B0000000000000000000006 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F0000000000000000000006 /* HistoryView.swift */; };
+		7B0000000000000000000007 /* HistoryWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F0000000000000000000007 /* HistoryWindowController.swift */; };
+		7B0000000000000000000008 /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F0000000000000000000008 /* OnboardingView.swift */; };
+		7B0000000000000000000009 /* OnboardingWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F0000000000000000000009 /* OnboardingWindowController.swift */; };
+		7B000000000000000000000A /* CloudSettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F000000000000000000000A /* CloudSettingsTab.swift */; };
+		7B000000000000000000000B /* CloudServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F000000000000000000000B /* CloudServiceTests.swift */; };
+		7B000000000000000000000C /* CaptureHistoryStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F000000000000000000000C /* CaptureHistoryStoreTests.swift */; };
+		7B000000000000000000000D /* SettingsMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F000000000000000000000D /* SettingsMigrationTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -232,6 +245,19 @@
 		F8894D0EB3F0C5461BDDEE3B /* CaptureQueueTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CaptureQueueTests.swift; path = ScreenProTests/QuickAccess/CaptureQueueTests.swift; sourceTree = SOURCE_ROOT; };
 		FD034097BA82EED8641E7A87 /* CaptureItemTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CaptureItemTests.swift; path = ScreenProTests/QuickAccess/CaptureItemTests.swift; sourceTree = SOURCE_ROOT; };
 		FEC0FEAE470A4BA56BE051FA /* RecordingState.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RecordingState.swift; path = Recording/Models/RecordingState.swift; sourceTree = "<group>"; };
+		7F0000000000000000000001 /* CloudService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudService.swift; sourceTree = "<group>"; };
+		7F0000000000000000000002 /* PerformanceMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PerformanceMonitor.swift; path = ScreenPro/Core/Performance/PerformanceMonitor.swift; sourceTree = SOURCE_ROOT; };
+		7F0000000000000000000003 /* AccessibilitySupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AccessibilitySupport.swift; path = ScreenPro/Core/Accessibility/AccessibilitySupport.swift; sourceTree = SOURCE_ROOT; };
+		7F0000000000000000000004 /* CaptureHistoryItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CaptureHistoryItem.swift; path = ScreenPro/Features/History/CaptureHistoryItem.swift; sourceTree = SOURCE_ROOT; };
+		7F0000000000000000000005 /* CaptureHistoryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CaptureHistoryStore.swift; path = ScreenPro/Features/History/CaptureHistoryStore.swift; sourceTree = SOURCE_ROOT; };
+		7F0000000000000000000006 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HistoryView.swift; path = ScreenPro/Features/History/HistoryView.swift; sourceTree = SOURCE_ROOT; };
+		7F0000000000000000000007 /* HistoryWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HistoryWindowController.swift; path = ScreenPro/Features/History/HistoryWindowController.swift; sourceTree = SOURCE_ROOT; };
+		7F0000000000000000000008 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OnboardingView.swift; path = ScreenPro/Features/Onboarding/OnboardingView.swift; sourceTree = SOURCE_ROOT; };
+		7F0000000000000000000009 /* OnboardingWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = OnboardingWindowController.swift; path = ScreenPro/Features/Onboarding/OnboardingWindowController.swift; sourceTree = SOURCE_ROOT; };
+		7F000000000000000000000A /* CloudSettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudSettingsTab.swift; sourceTree = "<group>"; };
+		7F000000000000000000000B /* CloudServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudServiceTests.swift; sourceTree = "<group>"; };
+		7F000000000000000000000C /* CaptureHistoryStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureHistoryStoreTests.swift; sourceTree = "<group>"; };
+		7F000000000000000000000D /* SettingsMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMigrationTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -293,6 +319,8 @@
 				002000000003 /* AppCoordinator.swift */,
 				007000000004 /* Services */,
 				8A16D7CC31139C332CB61E3D /* Extensions */,
+				7F0000000000000000000002 /* PerformanceMonitor.swift */,
+				7F0000000000000000000003 /* AccessibilitySupport.swift */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -304,6 +332,7 @@
 				002000000005 /* ShortcutManager.swift */,
 				002000000006 /* SettingsManager.swift */,
 				002000000007 /* StorageService.swift */,
+				7F0000000000000000000001 /* CloudService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -319,6 +348,8 @@
 				3884031483F7456E5260BFA5 /* TextRecognition */,
 				9E977FA355A42D94CFB5E081 /* CaptureEnhancements */,
 				8D86A00190E056387A2A16C0 /* Background */,
+				7E0000000000000000000001 /* History */,
+				7E0000000000000000000002 /* Onboarding */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -340,6 +371,7 @@
 				002000000012 /* RecordingSettingsTab.swift */,
 				002000000013 /* ShortcutsSettingsTab.swift */,
 				D91640DBF858BEDDFABE10B6 /* AdvancedFeaturesSettingsTab.swift */,
+				7F000000000000000000000A /* CloudSettingsTab.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -408,6 +440,9 @@
 				295DD726DF265925EA37CC87 /* KeyPressTests.swift */,
 				EA20823760F000322A890063 /* RecordingStateTests.swift */,
 				260DC2D01F165BA7682397A8 /* VideoConfigTests.swift */,
+				7F000000000000000000000B /* CloudServiceTests.swift */,
+				7F000000000000000000000C /* CaptureHistoryStoreTests.swift */,
+				7F000000000000000000000D /* SettingsMigrationTests.swift */,
 			);
 			path = Unit;
 			sourceTree = "<group>";
@@ -592,6 +627,26 @@
 			name = Models;
 			sourceTree = "<group>";
 		};
+		7E0000000000000000000001 /* History */ = {
+			isa = PBXGroup;
+			children = (
+				7F0000000000000000000004 /* CaptureHistoryItem.swift */,
+				7F0000000000000000000005 /* CaptureHistoryStore.swift */,
+				7F0000000000000000000006 /* HistoryView.swift */,
+				7F0000000000000000000007 /* HistoryWindowController.swift */,
+			);
+			name = History;
+			sourceTree = "<group>";
+		};
+		7E0000000000000000000002 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				7F0000000000000000000008 /* OnboardingView.swift */,
+				7F0000000000000000000009 /* OnboardingWindowController.swift */,
+			);
+			name = Onboarding;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -770,6 +825,16 @@
 				8477B5BFC29CBA114058FE09 /* OverlayPosition.swift in Sources */,
 				0B3736CB8E44576DBEC921CB /* OverlayShape.swift in Sources */,
 				354D57B1E0F32C669E89CF0D /* AdvancedFeaturesSettingsTab.swift in Sources */,
+				7B0000000000000000000001 /* CloudService.swift in Sources */,
+				7B0000000000000000000002 /* PerformanceMonitor.swift in Sources */,
+				7B0000000000000000000003 /* AccessibilitySupport.swift in Sources */,
+				7B0000000000000000000004 /* CaptureHistoryItem.swift in Sources */,
+				7B0000000000000000000005 /* CaptureHistoryStore.swift in Sources */,
+				7B0000000000000000000006 /* HistoryView.swift in Sources */,
+				7B0000000000000000000007 /* HistoryWindowController.swift in Sources */,
+				7B0000000000000000000008 /* OnboardingView.swift in Sources */,
+				7B0000000000000000000009 /* OnboardingWindowController.swift in Sources */,
+				7B000000000000000000000A /* CloudSettingsTab.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -793,6 +858,9 @@
 				A3330D7777BEFA0F39B4CD50 /* AudioRecordingTests.swift in Sources */,
 				DD49D8B8C89E3395678CED08 /* GIFRecordingTests.swift in Sources */,
 				8C5320144E11A0748F329C16 /* RecordingServiceTests.swift in Sources */,
+				7B000000000000000000000B /* CloudServiceTests.swift in Sources */,
+				7B000000000000000000000C /* CaptureHistoryStoreTests.swift in Sources */,
+				7B000000000000000000000D /* SettingsMigrationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

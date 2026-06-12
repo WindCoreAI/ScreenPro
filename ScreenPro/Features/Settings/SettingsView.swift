@@ -38,6 +38,12 @@ struct SettingsView: View {
                     Label("Advanced", systemImage: "sparkles")
                 }
                 .tag(4)
+
+            CloudSettingsTab()
+                .tabItem {
+                    Label("Cloud", systemImage: "icloud")
+                }
+                .tag(5)
         }
         .frame(width: 500, height: 500)
     }
