@@ -16,6 +16,7 @@ enum ShortcutAction: String, Codable, CaseIterable {
     case selfTimer
     case screenFreeze
     case allInOne
+    case reviewFlag
 
     var displayName: String {
         switch self {
@@ -29,7 +30,15 @@ enum ShortcutAction: String, Codable, CaseIterable {
         case .selfTimer: return "Self-Timer Capture"
         case .screenFreeze: return "Screen Freeze"
         case .allInOne: return "All-in-One"
+        case .reviewFlag: return "Flag Review Moment"
         }
+    }
+
+    /// Actions registered only while their owning session is active rather
+    /// than globally at launch. `.reviewFlag` must not consume its key
+    /// outside Review Recordings (008-review-recording, research.md R6).
+    var isSessionScoped: Bool {
+        self == .reviewFlag
     }
 }
 
@@ -80,6 +89,7 @@ struct Shortcut: Codable, Hashable {
             .textRecognition: Shortcut(keyCode: 0x1C, modifiers: UInt32(cmdKey | shiftKey)),    // ⌘⇧8
             .selfTimer: Shortcut(keyCode: 0x19, modifiers: UInt32(cmdKey | shiftKey)),          // ⌘⇧9
             .screenFreeze: Shortcut(keyCode: 0x1D, modifiers: UInt32(cmdKey | shiftKey)),       // ⌘⇧0
+            .reviewFlag: Shortcut(keyCode: 0x03, modifiers: UInt32(controlKey | optionKey)),    // ⌃⌥F
         ]
     }
 
@@ -166,7 +176,7 @@ final class ShortcutManager: ObservableObject, ShortcutManagerProtocol {
     }
 
     func registerAll() {
-        for (action, shortcut) in shortcuts {
+        for (action, shortcut) in shortcuts where !action.isSessionScoped {
             register(shortcut, for: action)
         }
     }

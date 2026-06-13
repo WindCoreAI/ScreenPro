@@ -124,6 +124,23 @@
 		7B000000000000000000000B /* CloudServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F000000000000000000000B /* CloudServiceTests.swift */; };
 		7B000000000000000000000C /* CaptureHistoryStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F000000000000000000000C /* CaptureHistoryStoreTests.swift */; };
 		7B000000000000000000000D /* SettingsMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7F000000000000000000000D /* SettingsMigrationTests.swift */; };
+		8B0000000000000000000001 /* ReviewFrameBuffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0000000000000000000001 /* ReviewFrameBuffer.swift */; };
+		8B0000000000000000000002 /* SpeechTranscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0000000000000000000002 /* SpeechTranscriptionService.swift */; };
+		8B0000000000000000000003 /* ReviewSessionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0000000000000000000003 /* ReviewSessionService.swift */; };
+		8B0000000000000000000004 /* ReviewReportGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0000000000000000000004 /* ReviewReportGenerator.swift */; };
+		8B0000000000000000000005 /* ReviewNotePanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0000000000000000000005 /* ReviewNotePanel.swift */; };
+		8B0000000000000000000006 /* ReviewSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0000000000000000000006 /* ReviewSummaryView.swift */; };
+		8B0000000000000000000007 /* ReviewSummaryWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0000000000000000000007 /* ReviewSummaryWindowController.swift */; };
+		8B0000000000000000000008 /* ReviewIssue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0000000000000000000008 /* ReviewIssue.swift */; };
+		8B0000000000000000000009 /* ReviewSessionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0000000000000000000009 /* ReviewSessionState.swift */; };
+		8B000000000000000000000A /* ReviewBundleOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E000000000000000000000A /* ReviewBundleOptions.swift */; };
+		8B000000000000000000000B /* ReviewManifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E000000000000000000000B /* ReviewManifest.swift */; };
+		8B000000000000000000000C /* MicrophoneAudioHub.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E000000000000000000000C /* MicrophoneAudioHub.swift */; };
+		8B000000000000000000000D /* ReviewSettingsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E000000000000000000000D /* ReviewSettingsTab.swift */; };
+		8B000000000000000000000E /* UtteranceSegmentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E000000000000000000000E /* UtteranceSegmentationTests.swift */; };
+		8B000000000000000000000F /* ReviewSessionLifecycleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E000000000000000000000F /* ReviewSessionLifecycleTests.swift */; };
+		8B0000000000000000000010 /* ReviewMergeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0000000000000000000010 /* ReviewMergeTests.swift */; };
+		8B0000000000000000000011 /* ReviewReportGeneratorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0000000000000000000011 /* ReviewReportGeneratorTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -258,6 +275,23 @@
 		7F000000000000000000000B /* CloudServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudServiceTests.swift; sourceTree = "<group>"; };
 		7F000000000000000000000C /* CaptureHistoryStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureHistoryStoreTests.swift; sourceTree = "<group>"; };
 		7F000000000000000000000D /* SettingsMigrationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsMigrationTests.swift; sourceTree = "<group>"; };
+		8E0000000000000000000001 /* ReviewFrameBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewFrameBuffer.swift; sourceTree = "<group>"; };
+		8E0000000000000000000002 /* SpeechTranscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechTranscriptionService.swift; sourceTree = "<group>"; };
+		8E0000000000000000000003 /* ReviewSessionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewSessionService.swift; sourceTree = "<group>"; };
+		8E0000000000000000000004 /* ReviewReportGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewReportGenerator.swift; sourceTree = "<group>"; };
+		8E0000000000000000000005 /* ReviewNotePanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewNotePanel.swift; sourceTree = "<group>"; };
+		8E0000000000000000000006 /* ReviewSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewSummaryView.swift; sourceTree = "<group>"; };
+		8E0000000000000000000007 /* ReviewSummaryWindowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewSummaryWindowController.swift; sourceTree = "<group>"; };
+		8E0000000000000000000008 /* ReviewIssue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewIssue.swift; sourceTree = "<group>"; };
+		8E0000000000000000000009 /* ReviewSessionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewSessionState.swift; sourceTree = "<group>"; };
+		8E000000000000000000000A /* ReviewBundleOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewBundleOptions.swift; sourceTree = "<group>"; };
+		8E000000000000000000000B /* ReviewManifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewManifest.swift; sourceTree = "<group>"; };
+		8E000000000000000000000C /* MicrophoneAudioHub.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MicrophoneAudioHub.swift; sourceTree = "<group>"; };
+		8E000000000000000000000D /* ReviewSettingsTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewSettingsTab.swift; sourceTree = "<group>"; };
+		8E000000000000000000000E /* UtteranceSegmentationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UtteranceSegmentationTests.swift; sourceTree = "<group>"; };
+		8E000000000000000000000F /* ReviewSessionLifecycleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewSessionLifecycleTests.swift; sourceTree = "<group>"; };
+		8E0000000000000000000010 /* ReviewMergeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewMergeTests.swift; sourceTree = "<group>"; };
+		8E0000000000000000000011 /* ReviewReportGeneratorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReviewReportGeneratorTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -333,6 +367,7 @@
 				002000000006 /* SettingsManager.swift */,
 				002000000007 /* StorageService.swift */,
 				7F0000000000000000000001 /* CloudService.swift */,
+				8E000000000000000000000C /* MicrophoneAudioHub.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -350,6 +385,7 @@
 				8D86A00190E056387A2A16C0 /* Background */,
 				7E0000000000000000000001 /* History */,
 				7E0000000000000000000002 /* Onboarding */,
+				8E70000000000000000000A1 /* Review */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -372,6 +408,7 @@
 				002000000013 /* ShortcutsSettingsTab.swift */,
 				D91640DBF858BEDDFABE10B6 /* AdvancedFeaturesSettingsTab.swift */,
 				7F000000000000000000000A /* CloudSettingsTab.swift */,
+				8E000000000000000000000D /* ReviewSettingsTab.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -391,6 +428,7 @@
 				002000000016 /* PermissionManagerTests.swift */,
 				007000000014 /* Unit */,
 				007000000015 /* Integration */,
+				8E70000000000000000000A3 /* Review */,
 			);
 			path = ScreenProTests;
 			sourceTree = "<group>";
@@ -647,6 +685,43 @@
 			name = Onboarding;
 			sourceTree = "<group>";
 		};
+		8E70000000000000000000A1 /* Review */ = {
+			isa = PBXGroup;
+			children = (
+				8E0000000000000000000001 /* ReviewFrameBuffer.swift */,
+				8E0000000000000000000002 /* SpeechTranscriptionService.swift */,
+				8E0000000000000000000003 /* ReviewSessionService.swift */,
+				8E0000000000000000000004 /* ReviewReportGenerator.swift */,
+				8E0000000000000000000005 /* ReviewNotePanel.swift */,
+				8E0000000000000000000006 /* ReviewSummaryView.swift */,
+				8E0000000000000000000007 /* ReviewSummaryWindowController.swift */,
+				8E70000000000000000000A2 /* Models */,
+			);
+			path = Review;
+			sourceTree = "<group>";
+		};
+		8E70000000000000000000A2 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				8E0000000000000000000008 /* ReviewIssue.swift */,
+				8E0000000000000000000009 /* ReviewSessionState.swift */,
+				8E000000000000000000000A /* ReviewBundleOptions.swift */,
+				8E000000000000000000000B /* ReviewManifest.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		8E70000000000000000000A3 /* Review */ = {
+			isa = PBXGroup;
+			children = (
+				8E000000000000000000000E /* UtteranceSegmentationTests.swift */,
+				8E000000000000000000000F /* ReviewSessionLifecycleTests.swift */,
+				8E0000000000000000000010 /* ReviewMergeTests.swift */,
+				8E0000000000000000000011 /* ReviewReportGeneratorTests.swift */,
+			);
+			path = Review;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -739,6 +814,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				001000000001 /* ScreenProApp.swift in Sources */,
+				8B0000000000000000000001 /* ReviewFrameBuffer.swift in Sources */,
+				8B0000000000000000000002 /* SpeechTranscriptionService.swift in Sources */,
+				8B0000000000000000000003 /* ReviewSessionService.swift in Sources */,
+				8B0000000000000000000004 /* ReviewReportGenerator.swift in Sources */,
+				8B0000000000000000000005 /* ReviewNotePanel.swift in Sources */,
+				8B0000000000000000000006 /* ReviewSummaryView.swift in Sources */,
+				8B0000000000000000000007 /* ReviewSummaryWindowController.swift in Sources */,
+				8B0000000000000000000008 /* ReviewIssue.swift in Sources */,
+				8B0000000000000000000009 /* ReviewSessionState.swift in Sources */,
+				8B000000000000000000000A /* ReviewBundleOptions.swift in Sources */,
+				8B000000000000000000000B /* ReviewManifest.swift in Sources */,
+				8B000000000000000000000C /* MicrophoneAudioHub.swift in Sources */,
+				8B000000000000000000000D /* ReviewSettingsTab.swift in Sources */,
 				001000000002 /* AppDelegate.swift in Sources */,
 				001000000003 /* AppCoordinator.swift in Sources */,
 				001000000004 /* PermissionManager.swift in Sources */,
@@ -861,6 +949,10 @@
 				7B000000000000000000000B /* CloudServiceTests.swift in Sources */,
 				7B000000000000000000000C /* CaptureHistoryStoreTests.swift in Sources */,
 				7B000000000000000000000D /* SettingsMigrationTests.swift in Sources */,
+				8B000000000000000000000E /* UtteranceSegmentationTests.swift in Sources */,
+				8B000000000000000000000F /* ReviewSessionLifecycleTests.swift in Sources */,
+				8B0000000000000000000010 /* ReviewMergeTests.swift in Sources */,
+				8B0000000000000000000011 /* ReviewReportGeneratorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

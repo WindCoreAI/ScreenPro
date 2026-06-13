@@ -61,11 +61,20 @@ final class RecordingService: NSObject, ObservableObject, RecordingServiceProtoc
     /// Memory warning threshold: ~30 seconds at 15fps (450 frames)
     private static let gifMemoryWarningFrameThreshold = 450
 
-    // MARK: - Microphone Audio Components (T053)
+    // MARK: - Microphone Audio Components (T053, 008-review-recording)
 
-    private var audioEngine: AVAudioEngine?
+    private let microphoneAudioHub: MicrophoneAudioHub
+    private var microphoneConsumerToken: UUID?
     private var microphoneInput: AVAssetWriterInput?
     private var isMicrophoneEnabled: Bool = false
+
+    // MARK: - Review Frame Tap (008-review-recording)
+
+    /// Optional tap on the screen-sample path, invoked on the stream's
+    /// sample-handler queue for every recorded video frame. Set by the
+    /// review session (ReviewFrameBuffer.ingest); nil outside review
+    /// sessions. The tap must not retain the sample's pixel buffer.
+    var videoFrameTap: ((CMSampleBuffer) -> Void)?
 
     // MARK: - Click Visualization (T072)
 
@@ -102,12 +111,30 @@ final class RecordingService: NSObject, ObservableObject, RecordingServiceProtoc
     init(
         storageService: StorageService,
         settingsManager: SettingsManager,
-        permissionManager: PermissionManager
+        permissionManager: PermissionManager,
+        microphoneAudioHub: MicrophoneAudioHub = MicrophoneAudioHub()
     ) {
         self.storageService = storageService
         self.settingsManager = settingsManager
         self.permissionManager = permissionManager
+        self.microphoneAudioHub = microphoneAudioHub
         super.init()
+    }
+
+    // MARK: - Recorded Time (008-review-recording)
+
+    /// Elapsed recorded time excluding paused intervals — matches the
+    /// pause-offset clock used for the video writer's frame timestamps, so
+    /// values seek correctly in the saved file. (`duration` re-includes
+    /// paused time after resume and is display-only.)
+    var recordedElapsedTime: TimeInterval {
+        guard let start = recordingStartTime else { return 0 }
+        var elapsed = Date().timeIntervalSince(start) - pauseOffset.seconds
+        if state == .paused, let pauseStart = pauseStartTime {
+            let now = CMClockGetTime(CMClockGetHostTimeClock())
+            elapsed -= CMTimeSubtract(now, pauseStart).seconds
+        }
+        return max(0, elapsed)
     }
 
     // MARK: - Public Methods
@@ -541,38 +568,27 @@ final class RecordingService: NSObject, ObservableObject, RecordingServiceProtoc
 
     // MARK: - Microphone Setup (T053, T054)
 
-    /// Sets up AVAudioEngine for microphone capture
+    /// Registers the mic track as a MicrophoneAudioHub consumer
+    /// (008-review-recording: the hub owns the single input-bus tap so the
+    /// review speech recognizer can share microphone audio).
     private func setupMicrophoneCapture() throws {
         guard isMicrophoneEnabled else { return }
 
-        let engine = AVAudioEngine()
-        audioEngine = engine
-
-        let inputNode = engine.inputNode
-        let format = inputNode.outputFormat(forBus: 0)
-
-        // Validate format
-        guard format.sampleRate > 0 && format.channelCount > 0 else {
+        do {
+            microphoneConsumerToken = try microphoneAudioHub.addConsumer { [weak self] buffer, time in
+                self?.handleMicrophoneBuffer(buffer, time: time)
+            }
+        } catch {
             throw RecordingError.microphoneNotAuthorized
         }
-
-        // Install tap on input node (T054)
-        inputNode.installTap(onBus: 0, bufferSize: 4096, format: format) { [weak self] buffer, time in
-            self?.handleMicrophoneBuffer(buffer, time: time)
-        }
-
-        // Prepare and start engine
-        engine.prepare()
-        try engine.start()
     }
 
     /// Stops microphone capture
     private func stopMicrophoneCapture() {
-        if let engine = audioEngine, engine.isRunning {
-            engine.inputNode.removeTap(onBus: 0)
-            engine.stop()
+        if let token = microphoneConsumerToken {
+            microphoneAudioHub.removeConsumer(token)
         }
-        audioEngine = nil
+        microphoneConsumerToken = nil
     }
 
     /// Handles incoming microphone audio buffers (T056)
@@ -626,6 +642,9 @@ final class RecordingService: NSObject, ObservableObject, RecordingServiceProtoc
     /// Handles incoming video samples (T021, T045)
     private func handleVideoSample(_ sampleBuffer: CMSampleBuffer) {
         guard state == .recording else { return }
+
+        // Review frame tap (008-review-recording)
+        videoFrameTap?(sampleBuffer)
 
         videoFrameCount += 1
         if videoFrameCount == 1 {
@@ -809,6 +828,7 @@ final class RecordingService: NSObject, ObservableObject, RecordingServiceProtoc
 
         stream = nil
         streamOutput = nil
+        videoFrameTap = nil
         assetWriter = nil
         videoInput = nil
         audioInput = nil

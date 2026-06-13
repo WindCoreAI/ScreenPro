@@ -86,17 +86,45 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
         )
     }()
 
+    /// Shared microphone tap fan-out (008-review-recording): one AVAudioEngine
+    /// input tap feeding both the recording's mic track and the review
+    /// session's speech recognizer.
+    private(set) lazy var microphoneAudioHub: MicrophoneAudioHub = {
+        MicrophoneAudioHub()
+    }()
+
     /// The recording service for screen recording (T012)
     private(set) lazy var recordingService: RecordingService = {
         RecordingService(
             storageService: storageService,
             settingsManager: settingsManager,
-            permissionManager: permissionManager
+            permissionManager: permissionManager,
+            microphoneAudioHub: microphoneAudioHub
         )
+    }()
+
+    /// The review session service (008-review-recording)
+    private(set) lazy var reviewSessionService: ReviewSessionService = {
+        let service = ReviewSessionService(
+            permissionManager: permissionManager,
+            microphoneAudioHub: microphoneAudioHub
+        )
+        service.onVoiceNotesUnavailable = { [weak self] message in
+            self?.showErrorNotification(message)
+        }
+        return service
     }()
 
     /// The recording controls window (T037)
     private var recordingControlsWindow: RecordingControlsWindow?
+
+    /// Review session UI state (008-review-recording)
+    private var isReviewSession = false
+    private var reviewNotePanel: ReviewNotePanel?
+    private var reviewSummaryController: ReviewSummaryWindowController?
+    /// Target descriptor captured at session start (the recording region is
+    /// cleared by RecordingService cleanup before the report is generated).
+    private var reviewTargetDescriptor: String = ""
 
     /// The annotation editor window controller (T017)
     /// Note: Uses NSWindowController type to avoid compile-time dependency on Annotation module.
@@ -298,8 +326,15 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
         Task {
             do {
                 let result = try await recordingService.stopRecording()
-                handleRecordingResult(result)
+                if isReviewSession {
+                    await handleReviewRecordingResult(result)
+                } else {
+                    handleRecordingResult(result)
+                }
             } catch {
+                if isReviewSession {
+                    endReviewSession(discard: true)
+                }
                 handleRecordingError(error)
             }
         }
@@ -310,6 +345,9 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
         guard state == .recording else { return }
         do {
             try recordingService.pauseRecording()
+            if isReviewSession {
+                reviewSessionService.suspend()
+            }
         } catch {
             handleRecordingError(error)
         }
@@ -320,6 +358,9 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
         guard recordingService.state == .paused else { return }
         do {
             try recordingService.resumeRecording()
+            if isReviewSession {
+                reviewSessionService.resume()
+            }
         } catch {
             handleRecordingError(error)
         }
@@ -330,6 +371,9 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
         Task {
             do {
                 try await recordingService.cancelRecording()
+                if isReviewSession {
+                    endReviewSession(discard: true)
+                }
                 hideRecordingControls()
                 state = .idle
             } catch {
@@ -779,6 +823,9 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
         case .allInOne:
             // Will show all-in-one UI in later milestone
             print("All-in-one mode not yet implemented")
+        case .reviewFlag:
+            // Registered only while a review session is active (008-review-recording)
+            handleReviewFlag()
         }
     }
 
@@ -1262,6 +1309,7 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
                 let region = RecordingRegion.window(window)
                 performRecording(region: region, format: nil)
             } else {
+                isReviewSession = false
                 state = .idle
             }
         }
@@ -1303,8 +1351,14 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
                 let format = createDefaultVideoFormat()
 
                 try await recordingService.startRecording(region: region, format: format)
+                if isReviewSession {
+                    await beginReviewSession(region: region)
+                }
                 showRecordingControls()
             } catch {
+                if isReviewSession {
+                    endReviewSession(discard: true)
+                }
                 handleRecordingError(error)
             }
         }
@@ -1316,8 +1370,14 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
             do {
                 let recordingFormat = format ?? createDefaultVideoFormat()
                 try await recordingService.startRecording(region: region, format: recordingFormat)
+                if isReviewSession {
+                    await beginReviewSession(region: region)
+                }
                 showRecordingControls()
             } catch {
+                if isReviewSession {
+                    endReviewSession(discard: true)
+                }
                 handleRecordingError(error)
             }
         }
@@ -1368,6 +1428,261 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
             scale: 1.0
         )
         return .gif(config)
+    }
+
+    // MARK: - Review Recording Methods (008-review-recording)
+
+    /// Starts a fullscreen Review Recording: flags + voice notes produce a
+    /// review report bundle on stop. Video format only (GIF excluded).
+    func startReviewRecording() {
+        guard canPerformCapture() else { return }
+        isReviewSession = true
+        state = .recording
+        beginFullscreenRecording()
+    }
+
+    /// Starts a Review Recording of a selected window.
+    func startReviewRecordingWindow() {
+        guard canPerformCapture() else { return }
+        isReviewSession = true
+        beginWindowRecordingSelection()
+    }
+
+    /// Starts a Review Recording of a selected area.
+    func startReviewRecordingArea() {
+        guard canPerformCapture() else { return }
+        isReviewSession = true
+        state = .selectingArea
+        isRecordingAreaSelection = true
+        beginAreaRecordingSelection()
+    }
+
+    /// Starts the review session once the recording stream is live: frame
+    /// tap, speech transcription (with lazy permission request), and the
+    /// session-scoped flag hotkey (research.md R6, R8).
+    private func beginReviewSession(region: RecordingRegion) async {
+        reviewTargetDescriptor = Self.describeRecordingTarget(region)
+
+        let settings = settingsManager.settings
+        await reviewSessionService.start(
+            voiceNotesEnabled: settings.reviewVoiceNotesEnabled,
+            transcriptionLocale: settings.reviewTranscriptionLocale
+        )
+        recordingService.videoFrameTap = reviewSessionService.frameTap()
+
+        let shortcut = settings.shortcuts[.reviewFlag]
+            ?? Shortcut.defaults[.reviewFlag]
+            ?? Shortcut(keyCode: 0x03, modifiers: 0)
+        shortcutManager.register(shortcut, for: .reviewFlag)
+    }
+
+    /// Tears down session-scoped review state. `discard` cancels the session
+    /// and deletes its artifacts (FR-016).
+    private func endReviewSession(discard: Bool) {
+        shortcutManager.unregister(.reviewFlag)
+        reviewNotePanel?.dismiss()
+        reviewNotePanel = nil
+        recordingService.videoFrameTap = nil
+        if discard {
+            reviewSessionService.cancel()
+        }
+        isReviewSession = false
+        reviewTargetDescriptor = ""
+    }
+
+    /// Flags the current moment (hotkey or controls button, FR-002..004).
+    func handleReviewFlag() {
+        guard isReviewSession else { return }
+        guard let issue = reviewSessionService.flagCurrentMoment() else { return }
+
+        AccessibilityAnnouncer.shared.announce("Moment flagged at \(issue.timecode)")
+
+        // Offer the non-blocking quick-note field; ignoring it keeps the flag.
+        reviewNotePanel?.dismiss()
+        let panel = ReviewNotePanel(
+            issue: issue,
+            anchor: recordingControlsWindow?.frame
+        ) { [weak self] text in
+            self?.reviewSessionService.setNote(text, for: issue.id)
+        }
+        reviewNotePanel = panel
+        panel.show()
+    }
+
+    /// Stop pipeline for review sessions: finish session → optional summary
+    /// → bundle generation → history/Quick Access/reveal (research.md R8).
+    private func handleReviewRecordingResult(_ result: RecordingResult) async {
+        hideRecordingControls()
+        shortcutManager.unregister(.reviewFlag)
+        reviewNotePanel?.dismiss()
+        reviewNotePanel = nil
+
+        AccessibilityAnnouncer.shared.announceRecordingStopped(duration: result.duration)
+
+        let output = await reviewSessionService.finish()
+
+        // Nothing captured → degrade to a normal recording save (FR-013).
+        guard !output.isEmpty else {
+            reviewSessionService.cleanupAfterExport()
+            isReviewSession = false
+            showInfoNotification(
+                title: "Recording Saved",
+                body: "No review notes were captured, so the recording was saved without a report."
+            )
+            handleRecordingResult(result)
+            return
+        }
+
+        state = .idle
+
+        if settingsManager.settings.reviewShowSummaryBeforeExport && !output.issues.isEmpty {
+            let controller = ReviewSummaryWindowController(session: reviewSessionService) { [weak self] in
+                guard let self else { return }
+                self.reviewSummaryController = nil
+                Task {
+                    await self.generateReviewBundle(for: result)
+                }
+            }
+            reviewSummaryController = controller
+            controller.present()
+        } else {
+            await generateReviewBundle(for: result)
+        }
+    }
+
+    /// Generates the Review Report bundle and surfaces it (FR-008..FR-011).
+    private func generateReviewBundle(for result: RecordingResult) async {
+        // Re-snapshot: the summary step may have edited or deleted issues.
+        let output = reviewSessionService.currentOutput()
+
+        guard !output.isEmpty else {
+            reviewSessionService.cleanupAfterExport()
+            isReviewSession = false
+            showInfoNotification(
+                title: "Recording Saved",
+                body: "All review notes were removed, so the recording was saved without a report."
+            )
+            handleRecordingResult(result)
+            return
+        }
+
+        let meta = ReviewSessionMeta(
+            recordedAt: result.timestamp,
+            duration: result.duration,
+            target: reviewTargetDescriptor
+        )
+        let options = ReviewBundleOptions.from(settingsManager.settings)
+        let saveLocation = settingsManager.settings.defaultSaveLocation
+        let generator = ReviewReportGenerator()
+
+        do {
+            let bundleURL = try await generator.generate(
+                output: output,
+                videoURL: result.url,
+                sessionMeta: meta,
+                options: options,
+                saveLocation: saveLocation
+            )
+
+            reviewSessionService.cleanupAfterExport()
+            isReviewSession = false
+            reviewTargetDescriptor = ""
+
+            recordReviewBundleInHistory(bundleURL, result: result)
+            surfaceReviewBundle(bundleURL, issueCount: output.issues.count)
+
+            AccessibilityAnnouncer.shared.announce(
+                "Review report generated with \(output.issues.count) issue\(output.issues.count == 1 ? "" : "s")"
+            )
+        } catch {
+            // Generator guarantees the video survived at result.url; save it
+            // through the normal path and tell the user what happened.
+            reviewSessionService.cleanupAfterExport()
+            isReviewSession = false
+            showErrorNotification(error.localizedDescription)
+            handleRecordingResult(result)
+        }
+        state = .idle
+    }
+
+    /// Records the bundle in capture history (FR-011). The folder is the
+    /// history item so reveal/drag operate on the whole bundle.
+    private func recordReviewBundleInHistory(_ bundleURL: URL, result: RecordingResult) {
+        guard settingsManager.settings.captureHistoryEnabled else { return }
+
+        let historyResult = RecordingResult(
+            id: result.id,
+            url: bundleURL,
+            duration: result.duration,
+            format: result.format,
+            timestamp: result.timestamp
+        )
+        let thumbnailURL = bundleURL
+            .appendingPathComponent(ReviewReportGenerator.screenshotsDirectory)
+            .appendingPathComponent("issue-01.png")
+        let thumbnail = Self.loadCGImage(from: thumbnailURL)
+        historyStore?.recordRecording(historyResult, thumbnail: thumbnail)
+    }
+
+    /// Reveals the bundle in Finder and notifies (FR-011); pushes the first
+    /// issue screenshot to Quick Access so the usual overlay appears.
+    private func surfaceReviewBundle(_ bundleURL: URL, issueCount: Int) {
+        NSWorkspace.shared.activateFileViewerSelecting([bundleURL])
+
+        if settingsManager.settings.showQuickAccess,
+           let display = captureService.availableDisplays.first {
+            let thumbnailURL = bundleURL
+                .appendingPathComponent(ReviewReportGenerator.screenshotsDirectory)
+                .appendingPathComponent("issue-01.png")
+            if let thumbnail = Self.loadCGImage(from: thumbnailURL) {
+                let captureResult = CaptureResult(
+                    image: thumbnail,
+                    mode: .display(display),
+                    sourceRect: .zero,
+                    scaleFactor: 1.0
+                )
+                quickAccessController.addCapture(captureResult)
+            }
+        }
+
+        showInfoNotification(
+            title: "Review Report Ready",
+            body: "\(issueCount) issue\(issueCount == 1 ? "" : "s") captured in \(bundleURL.lastPathComponent)."
+        )
+    }
+
+    private static func describeRecordingTarget(_ region: RecordingRegion) -> String {
+        switch region {
+        case .display(let display):
+            return "display (\(display.width)×\(display.height))"
+        case .window(let window):
+            let app = window.owningApplication?.applicationName ?? "Unknown App"
+            let title = window.title.flatMap { $0.isEmpty ? nil : $0 }
+            return title.map { "window: \(app) — \($0)" } ?? "window: \(app)"
+        case .area(let rect, _):
+            return "area \(Int(rect.width))×\(Int(rect.height))"
+        }
+    }
+
+    private static func loadCGImage(from url: URL) -> CGImage? {
+        guard let source = CGImageSourceCreateWithURL(url as CFURL, nil) else { return nil }
+        return CGImageSourceCreateImageAtIndex(source, 0, nil)
+    }
+
+    private func showInfoNotification(title: String, body: String) {
+        guard settingsManager.settings.showNotifications else { return }
+
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = nil
+
+        let request = UNNotificationRequest(
+            identifier: UUID().uuidString,
+            content: content,
+            trigger: nil
+        )
+        UNUserNotificationCenter.current().add(request)
     }
 
     // MARK: - GIF Recording Methods (T047)
@@ -1530,6 +1845,11 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
         print("Recording error: \(error)")
         hideRecordingControls()
 
+        // Discard any review session attached to the failed recording (008)
+        if isReviewSession {
+            endReviewSession(discard: true)
+        }
+
         if let recordingError = error as? RecordingError {
             switch recordingError {
             case .screenCaptureNotAuthorized:
@@ -1570,6 +1890,7 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
     private func showRecordingControls() {
         let controlsWindow = RecordingControlsWindow(
             recordingService: recordingService,
+            reviewSession: isReviewSession ? reviewSessionService : nil,
             onStop: { [weak self] in
                 self?.stopRecording()
             },
@@ -1581,7 +1902,10 @@ final class AppCoordinator: ObservableObject, AppCoordinatorProtocol {
             },
             onCancel: { [weak self] in
                 self?.cancelRecording()
-            }
+            },
+            onFlag: isReviewSession ? { [weak self] in
+                self?.handleReviewFlag()
+            } : nil
         )
         controlsWindow.orderFront(nil)
         recordingControlsWindow = controlsWindow
@@ -1679,6 +2003,7 @@ extension AppCoordinator: SelectionWindowDelegate {
         // Reset recording, scrolling capture, and OCR flags if applicable
         isRecordingAreaSelection = false
         isGIFRecording = false
+        isReviewSession = false
         isScrollingCaptureAreaSelection = false
         isOCRCaptureAreaSelection = false
 
